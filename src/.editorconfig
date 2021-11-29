@@ -1,0 +1,96 @@
+root = true
+
+[*]
+end_of_line = crlf
+
+[*.cs]
+indent_style = tab
+indent_size = 3
+csharp_style_conditional_delegate_call = true:error
+csharp_style_expression_bodied_accessors = true:error
+csharp_style_expression_bodied_constructors = true:error
+csharp_style_expression_bodied_indexers = true:error
+csharp_style_expression_bodied_methods = true:error
+csharp_style_expression_bodied_operators = true:error
+csharp_style_expression_bodied_properties = true:error
+csharp_style_inlined_variable_declaration = true:error
+csharp_style_pattern_matching_over_as_with_null_check = true:error
+csharp_style_pattern_matching_over_is_with_cast_check = true:error
+csharp_style_throw_expression = true:error
+csharp_style_var_elsewhere = true:error
+csharp_style_var_for_built_in_types = true:error
+csharp_style_var_when_type_is_apparent = true:error
+dotnet_sort_system_directives_first = false
+dotnet_style_collection_initializer = true:error
+dotnet_style_explicit_tuple_names = true:error
+dotnet_style_null_propagation = true:error
+dotnet_style_object_initializer = true:error
+dotnet_style_predefined_type_for_locals_parameters_members = true:error
+dotnet_style_qualification_for_event = true:error
+dotnet_style_qualification_for_field = true:error
+dotnet_style_qualification_for_method = true:error
+dotnet_style_qualification_for_property = true:error
+
+# CA1030: Use events where appropriate
+dotnet_diagnostic.CA1030.severity = none
+
+# CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1303.severity = none
+
+# CA1014: Mark assemblies with CLSCompliant
+dotnet_diagnostic.CA1014.severity = none
+
+dotnet_diagnostics.NU1603.severity = none
+
+# NUnit analyzers
+dotnet_diagnostic.NUnit2029.severity=error
+dotnet_diagnostic.NUnit2001.severity=error
+dotnet_diagnostic.NUnit2002.severity=error
+dotnet_diagnostic.NUnit2003.severity=error
+dotnet_diagnostic.NUnit2004.severity=error
+dotnet_diagnostic.NUnit2005.severity=error
+dotnet_diagnostic.NUnit2006.severity=error
+dotnet_diagnostic.NUnit2007.severity=error
+dotnet_diagnostic.NUnit2008.severity=error
+dotnet_diagnostic.NUnit2009.severity=error
+dotnet_diagnostic.NUnit2010.severity=error
+dotnet_diagnostic.NUnit2011.severity=error
+dotnet_diagnostic.NUnit2012.severity=error
+dotnet_diagnostic.NUnit2013.severity=error
+dotnet_diagnostic.NUnit2014.severity=error
+dotnet_diagnostic.NUnit2015.severity=error
+dotnet_diagnostic.NUnit2016.severity=error
+dotnet_diagnostic.NUnit2017.severity=error
+dotnet_diagnostic.NUnit2018.severity=error
+dotnet_diagnostic.NUnit2019.severity=error
+dotnet_diagnostic.NUnit2027.severity=error
+dotnet_diagnostic.NUnit2030.severity=error
+dotnet_diagnostic.NUnit2028.severity=error
+dotnet_diagnostic.NUnit2031.severity=error
+dotnet_diagnostic.NUnit2032.severity=error
+dotnet_diagnostic.NUnit2033.severity=error
+dotnet_diagnostic.NUnit2034.severity=error
+dotnet_diagnostic.NUnit2035.severity=error
+dotnet_diagnostic.NUnit2036.severity=error
+dotnet_diagnostic.NUnit2037.severity=error
+dotnet_diagnostic.NUnit2038.severity=error
+dotnet_diagnostic.NUnit2039.severity=error
+dotnet_diagnostic.NUnit2042.severity=error
+dotnet_diagnostic.NUnit2043.severity=error
+
+# Async methods should have "Async" suffix
+dotnet_naming_rule.async_methods_end_in_async.symbols = any_async_methods
+dotnet_naming_rule.async_methods_end_in_async.style = end_in_async
+dotnet_naming_rule.async_methods_end_in_async.severity = error
+
+dotnet_naming_symbols.any_async_methods.applicable_kinds = method
+dotnet_naming_symbols.any_async_methods.applicable_accessibilities = *
+dotnet_naming_symbols.any_async_methods.required_modifiers = async
+
+dotnet_naming_style.end_in_async.required_prefix =
+dotnet_naming_style.end_in_async.required_suffix = Async
+dotnet_naming_style.end_in_async.capitalization = pascal_case
+dotnet_naming_style.end_in_async.word_separator =
+
+[*.xml]
+indent_style = tab
