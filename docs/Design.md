@@ -71,7 +71,37 @@ public static class PointExtensions
 	}
 }
 ```
-Now, the name of the `static` class may need to change to be something that is guaranteed to be unique. **TODO: Finish**
+Side note: one other idea is to potentially do it as an instance method **if** the type definition is `partial`. In other words, if I find this:
+```
+namespace Maths.Geometry;
+
+public partial struct Point
+{
+	public Point(int x, int y) =>
+		(this.X, this.Y) = (x, y);
+		
+	public int X { get; }
+	public int Y { get; }
+}
+```
+
+I could do this:
+```
+namespace Maths.Geometry;
+
+public partial struct Point
+{
+	public void Deconstruct(out int x, out int y)
+	{
+		x = self.X;
+		y = self.Y;
+	}
+}
+```
+
+This is a TODO in that I want to test `Deconstruct` methods as either instance or static.
+
+Now, the name of the `static` class may need to change to be something that is guaranteed to be unique.
 
 One other option is to create the extension method if a `Deconstruct` method doesn't exist with the number of properties found. For example, let's say we have this:
 ```
@@ -102,6 +132,8 @@ AutoDeconstruct would see that there are three properties that could be used for
 ```
 namespace Models;
 
+// TODO: This name would have to be unique,
+// otherwise it may collide with an existing type name.
 public static class PersonExtensions
 {
 	public static void Deconstruct(this Person self, out Guid id, out string name, out uint age)
@@ -114,7 +146,7 @@ public static class PersonExtensions
 ```
 This also illustrates the issue that we have to generate a unique name for the extensions class that is guaranteed not to collide with any existing types. A simple way to do this is to generate a GUID, but this is also kind of ugly. Maybe what I can do is "reserve" a name, like `AutoDeconstructExtensions`, and create one for each needed namespace (or make them all `partial` so I don't have to think about combining them myself). Similar to what I did in PartiallyApplied, create a configuration file that would let the user define a different name for this class. I like that, I think that'll address any issues (i.e. the user could say the class name would be `MySuperNamedClassForGeneratedDeconstructMethods`).
 
-So, what do I need to look for? I want to find types that do not have a `Deconstruct` for all their accessible property getters (excluding indexers). So, for the first pass, we're only going to look for either `TypeDeclarationSyntax` or `MethodDeclarationSyntax` nodes. If it's a `MethodDeclarationSyntax`, we only care if it's an extension method that has the name `Deconstruct`, and all of the parameters are `out` (except for the first one). The second pass will just return the node. The real work will happen in the source output method.
+So, what do I need to look for? I want to find types that do not have a `Deconstruct` for all their accessible property getters (excluding indexers). So, for the first pass, we're only going to look for either `TypeDeclarationSyntax` (where the type is not a record type) or `MethodDeclarationSyntax` nodes. If it's a `MethodDeclarationSyntax`, we only care if it's an extension method that has the name `Deconstruct`, and all of the parameters are `out` (except for the first one). The second pass will just return the node. The real work will happen in the source output method.
 
 The first thing I'll do is find all the methods, and group them by their extension target type (i.e. the type of the first parameter). Then, for each `TypeDeclarationSyntax`, I'll get its `ITypeSymbol` (or `INamedTypeSymbol`), and do this:
 
@@ -125,3 +157,5 @@ The first thing I'll do is find all the methods, and group them by their extensi
 To generate the `Deconstruct`, I need to know the target type, and the list of accesible property getters. That should be sufficient.
 
 The name of the file could be `AutoDeconstructExtensions_{TargetTypeNamespaceDotsToUnderscore}_{TargetTypeName}.g.cs`
+
+If a type definition doesn't want to participate in this, I could have an attribute like `[NoAutoDeconstruct]`.
