@@ -1,5 +1,5 @@
 ﻿using AutoDeconstruct.Configuration;
-using Humanizer;
+using AutoDeconstruct.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.CodeDom.Compiler;
@@ -37,13 +37,12 @@ internal sealed class AutoDeconstructBuilder
 		indentWriter.WriteLine("{");
 		indentWriter.Indent++;
 
-		// TODO: We would really like it if the parameter names
-		// were camelCased. I think Humanizer has this capability, 
-		// but I'd rather not take a dependency on that...we'll see.
+		// TODO: I'd like to not call ToCamelCase() three different times,
+		// so this may be a spot to optimize.
 		var outParameters = string.Join(", ", properties.Select(_ =>
 		{
 			namespaces.Add(_.Type.ContainingNamespace);
-			return $"out {_.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)} {_.Name.Camelize()}";
+			return $"out {_.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)} {_.Name.ToCamelCase()}";
 		}));
 
 		indentWriter.WriteLine($"public static void Deconstruct(this {type.Name} self, {outParameters})");
@@ -58,11 +57,11 @@ internal sealed class AutoDeconstructBuilder
 
 		if (properties.Length == 1)
 		{
-			indentWriter.WriteLine($"{properties[0].Name.Camelize()} = self.{properties[0].Name};");
+			indentWriter.WriteLine($"{properties[0].Name.ToCamelCase()} = self.{properties[0].Name};");
 		}
 		else
 		{
-			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => _.Name.Camelize()))}) =");
+			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => _.Name.ToCamelCase()))}) =");
 			indentWriter.Indent++;
 			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"self.{_.Name}"))});");
 			indentWriter.Indent--;
