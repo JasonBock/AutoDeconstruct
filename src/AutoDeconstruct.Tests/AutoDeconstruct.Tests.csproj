@@ -1,8 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<AssemblyName>AutoDeconstruct.Tests</AssemblyName>
-		<RootNamespace>AutoDeconstruct.Tests</RootNamespace>
-	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.NUnit" Version="1.1.0">
 			<NoWarn>NU1608</NoWarn>

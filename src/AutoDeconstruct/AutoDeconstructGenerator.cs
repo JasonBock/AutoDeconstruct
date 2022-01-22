@@ -32,8 +32,8 @@ public sealed class AutoDeconstructGenerator
 			context.SemanticModel.GetDeclaredSymbol(context.Node, token)!;
 
 		var provider = context.SyntaxProvider
-			.CreateSyntaxProvider(IsSyntaxTargetForGeneration, TransformTargets)
-			.Where(static _ => _ is not null);
+			 .CreateSyntaxProvider(IsSyntaxTargetForGeneration, TransformTargets)
+			 .Where(static _ => _ is not null);
 		var output = context.AnalyzerConfigOptionsProvider.Combine(provider.Collect());
 
 		context.RegisterSourceOutput(output,
@@ -51,13 +51,13 @@ public sealed class AutoDeconstructGenerator
 		foreach (var type in types)
 		{
 			var accessibleProperties = type.GetMembers().OfType<IPropertySymbol>()
-				.Where(_ => !_.IsIndexer && _.GetMethod is not null && 
+				.Where(_ => !_.IsIndexer && _.GetMethod is not null &&
 					_.GetMethod.DeclaredAccessibility == Accessibility.Public).ToImmutableArray();
 
 			if (accessibleProperties.Length > 0 &&
 				!type.GetMembers().OfType<IMethodSymbol>()
 					.Any(_ => _.Name == AutoDeconstructGenerator.DeconstructName &&
-						!_.IsStatic && 
+						!_.IsStatic &&
 						_.Parameters.Count(p => p.RefKind == RefKind.Out) == _.Parameters.Length &&
 						_.Parameters.Length == accessibleProperties.Length) &&
 				(!methods[type].Any(_ => _.Parameters.Length - 1 == accessibleProperties.Length)))
