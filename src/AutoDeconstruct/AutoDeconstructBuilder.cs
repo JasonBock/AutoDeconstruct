@@ -25,8 +25,9 @@ internal sealed class AutoDeconstructBuilder
 
 		if (!type.ContainingNamespace.IsGlobalNamespace)
 		{
-			indentWriter.WriteLine($"namespace {type.ContainingNamespace.ToDisplayString()};");
-			indentWriter.WriteLine();
+			indentWriter.WriteLine($"namespace {type.ContainingNamespace.ToDisplayString()}");
+			indentWriter.WriteLine("{");
+			indentWriter.Indent++;
 		}
 
 		indentWriter.WriteLine($"public static partial class {type.Name}Extensions");
@@ -39,36 +40,41 @@ internal sealed class AutoDeconstructBuilder
 		var outParameters = string.Join(", ", properties.Select(_ =>
 		{
 			namespaces.Add(_.Type.ContainingNamespace);
-			return $"out {_.Type.Name}{(_.NullableAnnotation == NullableAnnotation.Annotated ? "?" : string.Empty)} {_.Name.Camelize()}";
+			return $"out {_.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)} {_.Name.Camelize()}";
 		}));
 
-		indentWriter.WriteLine($"public static void Deconstruct(this {type.Name} self, {outParameters}) =>");
+		indentWriter.WriteLine($"public static void Deconstruct(this {type.Name} self, {outParameters})");
+		indentWriter.WriteLine("{");
+		indentWriter.Indent++;
 
 		if (!type.IsValueType)
 		{
 			namespaces.Add(typeof(ArgumentNullException));
-			indentWriter.Indent++;
-			indentWriter.WriteLine("self is null ? throw new ArgumentNullException(nameof(self)) :");
+			indentWriter.WriteLine("if(self is null) { throw new ArgumentNullException(nameof(self)); }");
 		}
 
 		if (properties.Length == 1)
 		{
-			indentWriter.Indent++;
 			indentWriter.WriteLine($"{properties[0].Name.Camelize()} = self.{properties[0].Name};");
-			indentWriter.Indent--;
 		}
 		else
 		{
-			indentWriter.Indent++;
 			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => _.Name.Camelize()))}) =");
 			indentWriter.Indent++;
-			indentWriter.WriteLine($"({string.Join(", ", $"self.{properties.Select(_ => _.Name)}")});");
-			indentWriter.Indent--;
+			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"self.{_.Name}"))});");
 			indentWriter.Indent--;
 		}
 
 		indentWriter.Indent--;
 		indentWriter.WriteLine("}");
+		indentWriter.Indent--;
+		indentWriter.WriteLine("}");
+
+		if (!type.ContainingNamespace.IsGlobalNamespace)
+		{
+			indentWriter.Indent--;
+			indentWriter.WriteLine("}");
+		}
 
 		var code = namespaces.Values.Count > 0 ?
 			string.Join(Environment.NewLine,
