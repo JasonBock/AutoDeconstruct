@@ -23,8 +23,6 @@ public sealed class AutoDeconstructGenerator
 				(node is MethodDeclarationSyntax methodNode &&
 					methodNode.Modifiers.Any(SyntaxKind.StaticKeyword) &&
 					methodNode.Identifier.ValueText == AutoDeconstructGenerator.DeconstructName &&
-					methodNode.ReturnType is PredefinedTypeSyntax predefinedType &&
-					predefinedType.Keyword.IsKind(SyntaxKind.VoidKeyword) &&
 					methodNode.ParameterList.Parameters.Count > 1 &&
 					methodNode.ParameterList.Parameters[0].Modifiers.Any(SyntaxKind.ThisKeyword) &&
 					(methodNode.ParameterList.Parameters.Count(parameter => parameter.Modifiers.Any(SyntaxKind.OutKeyword)) ==
@@ -59,7 +57,7 @@ public sealed class AutoDeconstructGenerator
 			if (accessibleProperties.Length > 0 &&
 				!type.GetMembers().OfType<IMethodSymbol>()
 					.Any(_ => _.Name == AutoDeconstructGenerator.DeconstructName &&
-						!_.IsStatic && _.ReturnsVoid &&
+						!_.IsStatic && 
 						_.Parameters.Count(p => p.RefKind == RefKind.Out) == _.Parameters.Length &&
 						_.Parameters.Length == accessibleProperties.Length) &&
 				(!methods[type].Any(_ => _.Parameters.Length - 1 == accessibleProperties.Length)))
