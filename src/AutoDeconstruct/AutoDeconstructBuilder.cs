@@ -14,6 +14,9 @@ internal sealed class AutoDeconstructBuilder
 		INamedTypeSymbol type, ImmutableArray<IPropertySymbol> properties) =>
 			this.Text = AutoDeconstructBuilder.Build(configurationValues, type, properties);
 
+	// TODO: Once the testing packages have ref assemblies for .NET 6.0,
+	// we can change the gen'd code to be file-scoped namespace,
+	// as well as use ArgumentNullException.ThrowIfNull().
 	private static SourceText Build(ConfigurationValues configurationValues,
 		INamedTypeSymbol type, ImmutableArray<IPropertySymbol> properties)
 	{
