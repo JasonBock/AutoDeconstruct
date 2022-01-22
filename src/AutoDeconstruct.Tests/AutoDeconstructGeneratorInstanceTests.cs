@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace AutoDeconstruct.Tests;
 
-public static class AutoDeconstructGeneratorTests
+public static class AutoDeconstructGeneratorInstanceTests
 {
 	[Test]
 	public static async Task GenerateWithReferenceTypeAndOneProperty()
@@ -327,6 +327,53 @@ namespace TestSpace
 }";
 		await TestAssistants.RunAsync(code,
 			Enumerable.Empty<(Type, string, string)>(),
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+	}
+
+	[Test]
+	public static async Task GenerateWhenPartialDefinitionsExist()
+	{
+		var code =
+@"using System;
+
+namespace TestSpace
+{
+	public partial class Test
+	{ 
+		public string? Name { get; set; }
+	}
+
+	public partial class Test
+	{ 
+		public Guid Id { get; set; }
+		public int Value { get; set; }
+
+		public void Deconstruct(out int value, out string? name, int[] values) =>
+			(value, name) = (this.Value, this.Name);
+	}
+}";
+
+		var generatedCode =
+@"using System;
+
+#nullable enable
+
+namespace TestSpace
+{
+	public static partial class TestExtensions
+	{
+		public static void Deconstruct(this Test self, out string? name, out Guid id, out int value)
+		{
+			if(self is null) { throw new ArgumentNullException(nameof(self)); }
+			(name, id, value) =
+				(self.Name, self.Id, self.Value);
+		}
+	}
+}
+";
+
+		await TestAssistants.RunAsync(code,
+			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 }
