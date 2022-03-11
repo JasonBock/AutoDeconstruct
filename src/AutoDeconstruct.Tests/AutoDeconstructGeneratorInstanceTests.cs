@@ -376,4 +376,70 @@ namespace TestSpace
 			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
+
+	[Test]
+	public static async Task GenerateWhenPropertiesExistInInheritanceHierarchy()
+	{
+		var code =
+@"using System;
+
+namespace TestSpace
+{
+	public class BaseTest
+	{ 
+		public int Id { get; set; }
+	}
+
+	public class Test
+		: BaseTest
+	{ 
+		public string? Name { get; set; }
+	}
+}";
+
+		var generatedBaseTestCode =
+@"using System;
+
+#nullable enable
+
+namespace TestSpace
+{
+	public static partial class BaseTestExtensions
+	{
+		public static void Deconstruct(this BaseTest self, out int id)
+		{
+			if(self is null) { throw new ArgumentNullException(nameof(self)); }
+			id = self.Id;
+		}
+	}
+}
+";
+
+		var generatedTestCode =
+@"using System;
+
+#nullable enable
+
+namespace TestSpace
+{
+	public static partial class TestExtensions
+	{
+		public static void Deconstruct(this Test self, out string? name, out int id)
+		{
+			if(self is null) { throw new ArgumentNullException(nameof(self)); }
+			(name, id) =
+				(self.Name, self.Id);
+		}
+	}
+}
+";
+
+		await TestAssistants.RunAsync(code,
+			new[] 
+			{ 
+				(typeof(AutoDeconstructGenerator), "BaseTest_AutoDeconstruct.g.cs", generatedBaseTestCode),
+				(typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedTestCode) 
+			},
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+	}
 }

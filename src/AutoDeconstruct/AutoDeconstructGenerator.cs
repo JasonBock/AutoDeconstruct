@@ -50,9 +50,19 @@ public sealed class AutoDeconstructGenerator
 
 		foreach (var type in types)
 		{
-			var accessibleProperties = type.GetMembers().OfType<IPropertySymbol>()
-				.Where(_ => !_.IsIndexer && _.GetMethod is not null &&
-					_.GetMethod.DeclaredAccessibility == Accessibility.Public).ToImmutableArray();
+			var accessiblePropertiesBuilder = ImmutableArray.CreateBuilder<IPropertySymbol>();
+
+			var targetType = type;
+
+			while (targetType is not null)
+			{
+				accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
+					.Where(_ => !_.IsIndexer && _.GetMethod is not null &&
+						_.GetMethod.DeclaredAccessibility == Accessibility.Public));
+				targetType = targetType.BaseType;
+			}
+
+			var accessibleProperties = accessiblePropertiesBuilder.ToImmutable();
 
 			if (accessibleProperties.Length > 0 &&
 				!type.GetMembers().OfType<IMethodSymbol>()
