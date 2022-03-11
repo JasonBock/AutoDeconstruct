@@ -10,6 +10,7 @@
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/jasonbock/autodeconstruct</PackageProjectUrl>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageTags>deconstruct;source generator</PackageTags>
 		<PackageVersion>$(Version)</PackageVersion>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<RepositoryUrl>https://github.com/jasonbock/autodeconstruct</RepositoryUrl>
