@@ -458,4 +458,42 @@ public static class AutoDeconstructGeneratorInstanceTests
 			},
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
+
+	[Test]
+	public static async Task GenerateWhenSelfPropertyExists()
+	{
+		var code =
+			"""
+			using System;
+
+			namespace TestSpace
+			{
+				public class Test
+				{ 
+					public string? Self { get; set; }
+				}
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+
+			namespace TestSpace;
+
+			public static partial class TestExtensions
+			{
+				public static void Deconstruct(this global::TestSpace.Test self1, out string? self)
+				{
+					global::System.ArgumentNullException.ThrowIfNull(self1);
+					self = self1.Self;
+				}
+			}
+
+			""";
+
+		await TestAssistants.RunAsync(code,
+			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+	}
 }
