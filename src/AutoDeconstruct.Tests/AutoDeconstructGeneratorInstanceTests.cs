@@ -170,7 +170,45 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			namespace TestSpace
 			{
-				public record Test(string? Id);
+				public record Test()
+				{
+					public string? Id { get; init; }
+				}
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+
+			namespace TestSpace;
+
+			public static partial class TestExtensions
+			{
+				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				{
+					global::System.ArgumentNullException.ThrowIfNull(self);
+					id = self.Id;
+				}
+			}
+
+			""";
+
+		await TestAssistants.RunAsync(code,
+			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+	}
+
+	[Test]
+	public static async Task GenerateWithRecordThatHasDeconstruct()
+	{
+		var code =
+			"""
+			using System;
+
+			namespace TestSpace
+			{
+				public record Test(string Id);
 			}
 			""";
 
@@ -451,10 +489,10 @@ public static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunAsync(code,
-			new[] 
-			{ 
+			new[]
+			{
 				(typeof(AutoDeconstructGenerator), "BaseTest_AutoDeconstruct.g.cs", generatedBaseTestCode),
-				(typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedTestCode) 
+				(typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedTestCode)
 			},
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}

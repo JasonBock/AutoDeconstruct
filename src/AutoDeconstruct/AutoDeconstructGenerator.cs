@@ -19,7 +19,7 @@ public sealed class AutoDeconstructGenerator
 			// We're looking for either type definitions that are not records
 			// or it's a method declaration that is an extension method with the name
 			// "Deconstruct" and all of the parameters are outs
-			node is TypeDeclarationSyntax typeNode && typeNode is not RecordDeclarationSyntax ||
+			node is TypeDeclarationSyntax typeNode ||
 				(node is MethodDeclarationSyntax methodNode &&
 					methodNode.Modifiers.Any(SyntaxKind.StaticKeyword) &&
 					methodNode.Identifier.ValueText == AutoDeconstructGenerator.DeconstructName &&
