@@ -1,13 +1,13 @@
 <Project>
 	<PropertyGroup>
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<AnalysisMode>all</AnalysisMode>
 		<Authors>Jason Bock</Authors>
 		<Copyright>Copyright © 2022</Copyright>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<Version>0.2.0</Version>
+		<Version>1.0.0</Version>
 	</PropertyGroup>
 </Project>

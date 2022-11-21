@@ -9,33 +9,34 @@ public static class AutoDeconstructGeneratorInstanceTests
 	public static async Task GenerateWithReferenceTypeAndOneProperty()
 	{
 		var code =
-@"using System;
+			"""
+			using System;
 
-namespace TestSpace
-{
-	public class Test
-	{ 
-		public string? Id { get; set; }
-	}
-}";
+			namespace TestSpace
+			{
+				public class Test
+				{ 
+					public string? Id { get; set; }
+				}
+			}
+			""";
 
 		var generatedCode =
-@"using System;
+			"""
+			#nullable enable
 
-#nullable enable
+			namespace TestSpace;
 
-namespace TestSpace
-{
-	public static partial class TestExtensions
-	{
-		public static void Deconstruct(this Test self, out string? id)
-		{
-			if(self is null) { throw new ArgumentNullException(nameof(self)); }
-			id = self.Id;
-		}
-	}
-}
-";
+			public static partial class TestExtensions
+			{
+				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				{
+					global::System.ArgumentNullException.ThrowIfNull(self);
+					id = self.Id;
+				}
+			}
+
+			""";
 
 		await TestAssistants.RunAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },

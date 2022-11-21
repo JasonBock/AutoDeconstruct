@@ -14,9 +14,6 @@ internal sealed class AutoDeconstructBuilder
 		INamedTypeSymbol type, ImmutableArray<IPropertySymbol> properties) =>
 			this.Text = AutoDeconstructBuilder.Build(configurationValues, type, properties);
 
-	// TODO: Once the testing packages have ref assemblies for .NET 6.0,
-	// we can change the gen'd code to be file-scoped namespace,
-	// as well as use ArgumentNullException.ThrowIfNull().
 	private static SourceText Build(ConfigurationValues configurationValues,
 		INamedTypeSymbol type, ImmutableArray<IPropertySymbol> properties)
 	{
@@ -24,46 +21,59 @@ internal sealed class AutoDeconstructBuilder
 		using var indentWriter = new IndentedTextWriter(writer,
 			configurationValues.IndentStyle == IndentStyle.Tab ? "\t" : new string(' ', (int)configurationValues.IndentSize));
 
-		var namespaces = new NamespaceGatherer();
+		indentWriter.WriteLines(
+			"""
+			#nullable enable
+
+			""");
 
 		if (!type.ContainingNamespace.IsGlobalNamespace)
 		{
-			indentWriter.WriteLine($"namespace {type.ContainingNamespace.ToDisplayString()}");
-			indentWriter.WriteLine("{");
-			indentWriter.Indent++;
+			indentWriter.WriteLines(
+				$"""
+				namespace {type.ContainingNamespace.ToDisplayString()};
+				
+				""");
 		}
 
-		indentWriter.WriteLine($"public static partial class {type.Name}Extensions");
-		indentWriter.WriteLine("{");
+		indentWriter.WriteLines(
+			$$"""
+			public static partial class {{type.Name}}Extensions
+			{
+			""");
 		indentWriter.Indent++;
 
 		// TODO: I'd like to not call ToCamelCase() three different times,
 		// so this may be a spot to optimize.
 		var outParameters = string.Join(", ", properties.Select(_ =>
 		{
-			namespaces.Add(_.Type.ContainingNamespace);
-			return $"out {_.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)} {_.Name.ToCamelCase()}";
+			return $"out {_.Type.GetFullyQualifiedName()} {_.Name.ToCamelCase()}";
 		}));
 
-		indentWriter.WriteLine($"public static void Deconstruct(this {type.Name} self, {outParameters})");
-		indentWriter.WriteLine("{");
+		var namingContext = new VariableNamingContext(properties.Select(_ => _.Name.ToCamelCase()).ToImmutableArray());
+
+		indentWriter.WriteLines(
+			$$"""
+			public static void Deconstruct(this {{type.GetFullyQualifiedName()}} {{namingContext["self"]}}, {{outParameters}})
+			{
+			""");
+
 		indentWriter.Indent++;
 
 		if (!type.IsValueType)
 		{
-			namespaces.Add(typeof(ArgumentNullException));
-			indentWriter.WriteLine("if(self is null) { throw new ArgumentNullException(nameof(self)); }");
+			indentWriter.WriteLine($"global::System.ArgumentNullException.ThrowIfNull({namingContext["self"]});");
 		}
 
 		if (properties.Length == 1)
 		{
-			indentWriter.WriteLine($"{properties[0].Name.ToCamelCase()} = self.{properties[0].Name};");
+			indentWriter.WriteLine($"{properties[0].Name.ToCamelCase()} = {namingContext["self"]}.{properties[0].Name};");
 		}
 		else
 		{
 			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => _.Name.ToCamelCase()))}) =");
 			indentWriter.Indent++;
-			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"self.{_.Name}"))});");
+			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"{namingContext["self"]}.{_.Name}"))});");
 			indentWriter.Indent--;
 		}
 
@@ -72,19 +82,7 @@ internal sealed class AutoDeconstructBuilder
 		indentWriter.Indent--;
 		indentWriter.WriteLine("}");
 
-		if (!type.ContainingNamespace.IsGlobalNamespace)
-		{
-			indentWriter.Indent--;
-			indentWriter.WriteLine("}");
-		}
-
-		var code = namespaces.Values.Count > 0 ?
-			string.Join(Environment.NewLine,
-				string.Join(Environment.NewLine, namespaces.Values.Select(_ => $"using {_};")),
-				string.Empty, "#nullable enable", string.Empty, writer.ToString()) :
-			string.Join(Environment.NewLine, "#nullable enable", string.Empty, writer.ToString());
-
-		return SourceText.From(code, Encoding.UTF8);
+		return SourceText.From(writer.ToString(), Encoding.UTF8);
 	}
 
 	public SourceText Text { get; private set; }
