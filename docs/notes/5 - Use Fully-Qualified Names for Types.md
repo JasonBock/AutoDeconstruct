@@ -1,0 +1,1 @@
+* Have a test when a property is named `Self`
