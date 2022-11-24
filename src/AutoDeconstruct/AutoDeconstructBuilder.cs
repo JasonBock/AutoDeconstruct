@@ -51,13 +51,23 @@ internal sealed class AutoDeconstructBuilder
 		}));
 
 		var namingContext = new VariableNamingContext(properties.Select(_ => _.Name.ToCamelCase()).ToImmutableArray());
+		var genericParameters = type.TypeParameters.Length > 0 ?
+			$"<{string.Join(", ", type.TypeParameters.Select(_ => _.Name))}>" :
+			string.Empty;
 
-		indentWriter.WriteLines(
-			$$"""
-			public static void Deconstruct(this {{type.GetFullyQualifiedName()}} {{namingContext["self"]}}, {{outParameters}})
-			{
-			""");
+		indentWriter.WriteLine(
+			$$"""public static void Deconstruct{{genericParameters}}(this {{type.GetFullyQualifiedName()}} {{namingContext["self"]}}, {{outParameters}})""");
 
+		var constraints = type.GetConstraints();
+
+		if(constraints.Length > 0) 
+		{
+			indentWriter.Indent++;
+			indentWriter.WriteLine(constraints);
+			indentWriter.Indent--;
+		}
+
+		indentWriter.WriteLine("{");
 		indentWriter.Indent++;
 
 		if (!type.IsValueType)
