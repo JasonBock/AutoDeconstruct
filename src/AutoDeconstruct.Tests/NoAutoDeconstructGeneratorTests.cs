@@ -28,14 +28,46 @@ public static class NoAutoDeconstructGeneratorTests
 	}
 
 	[Test]
-	public static void GenerateWhenAttributeExistsOnStruct()
+	public static async Task GenerateWhenAttributeExistsOnStructAsync()
 	{
+		var code =
+			"""
+			using AutoDeconstruct;
 
+			namespace TestSpace
+			{
+				[NoAutoDeconstruct]
+				public struct Test
+				{
+					public string Id { get; set; }
+				}
+			}
+			""";
+
+		await TestAssistants.RunAsync(code,
+			Enumerable.Empty<(Type, string, string)>(),
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
 	[Test]
-	public static void GenerateWhenAttributeExistsOnInterface()
+	public static async Task GenerateWhenAttributeExistsOnInterfaceAsync()
 	{
+		var code =
+			"""
+			using AutoDeconstruct;
 
+			namespace TestSpace
+			{
+				[NoAutoDeconstruct]
+				public interface ITest
+				{
+					string Id { get; set; }
+				}
+			}
+			""";
+
+		await TestAssistants.RunAsync(code,
+			Enumerable.Empty<(Type, string, string)>(),
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 }
