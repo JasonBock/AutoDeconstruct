@@ -47,7 +47,7 @@ internal sealed class AutoDeconstructBuilder
 		// so this may be a spot to optimize.
 		var outParameters = string.Join(", ", properties.Select(_ =>
 		{
-			return $"out {_.Type.GetFullyQualifiedName()} {_.Name.ToCamelCase()}";
+			return $"out {_.Type.GetFullyQualifiedName()} @{_.Name.ToCamelCase()}";
 		}));
 
 		var namingContext = new VariableNamingContext(properties.Select(_ => _.Name.ToCamelCase()).ToImmutableArray());
@@ -56,7 +56,7 @@ internal sealed class AutoDeconstructBuilder
 			string.Empty;
 
 		indentWriter.WriteLine(
-			$$"""public static void Deconstruct{{genericParameters}}(this {{type.GetFullyQualifiedName()}} {{namingContext["self"]}}, {{outParameters}})""");
+			$$"""public static void Deconstruct{{genericParameters}}(this {{type.GetFullyQualifiedName()}} @{{namingContext["self"]}}, {{outParameters}})""");
 
 		var constraints = type.GetConstraints();
 
@@ -72,18 +72,18 @@ internal sealed class AutoDeconstructBuilder
 
 		if (!type.IsValueType)
 		{
-			indentWriter.WriteLine($"global::System.ArgumentNullException.ThrowIfNull({namingContext["self"]});");
+			indentWriter.WriteLine($"global::System.ArgumentNullException.ThrowIfNull(@{namingContext["self"]});");
 		}
 
 		if (properties.Length == 1)
 		{
-			indentWriter.WriteLine($"{properties[0].Name.ToCamelCase()} = {namingContext["self"]}.{properties[0].Name};");
+			indentWriter.WriteLine($"@{properties[0].Name.ToCamelCase()} = @{namingContext["self"]}.{properties[0].Name};");
 		}
 		else
 		{
-			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => _.Name.ToCamelCase()))}) =");
+			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"@{_.Name.ToCamelCase()}"))}) =");
 			indentWriter.Indent++;
-			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"{namingContext["self"]}.{_.Name}"))});");
+			indentWriter.WriteLine($"({string.Join(", ", properties.Select(_ => $"@{namingContext["self"]}.{_.Name}"))});");
 			indentWriter.Indent--;
 		}
 

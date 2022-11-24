@@ -37,10 +37,10 @@ public static class AutoDeconstructGeneratorExtensionMethodTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					id = self.Id;
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					@id = @self.Id;
 				}
 			}
 
@@ -83,10 +83,10 @@ public static class AutoDeconstructGeneratorExtensionMethodTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					id = self.Id;
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					@id = @self.Id;
 				}
 			}
 

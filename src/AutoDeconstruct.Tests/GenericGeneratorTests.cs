@@ -30,11 +30,11 @@ public static class GenericGeneratorTests
 			
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct<T>(this global::TestSpace.Test<T> self, out T id, out T value)
+				public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(id, value) =
-						(self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@id, @value) =
+						(@self.Id, @self.Value);
 				}
 			}
 			
@@ -71,12 +71,12 @@ public static class GenericGeneratorTests
 			
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct<T>(this global::TestSpace.Test<T> self, out T id, out T value)
+				public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
 					where T : class
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(id, value) =
-						(self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@id, @value) =
+						(@self.Id, @self.Value);
 				}
 			}
 			
@@ -87,8 +87,6 @@ public static class GenericGeneratorTests
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
-	// TODO: Multiple generics
-	// and multiple constraints on multiple generics.
 	[Test]
 	public static async Task GenerateWhenTypeHasMultipleGenericsAsync()
 	{
@@ -114,11 +112,11 @@ public static class GenericGeneratorTests
 			
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> self, out T1 id, out T2 value)
+				public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(id, value) =
-						(self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@id, @value) =
+						(@self.Id, @self.Value);
 				}
 			}
 			
@@ -158,12 +156,12 @@ public static class GenericGeneratorTests
 			
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> self, out T1 id, out T2 value)
+				public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
 					where T1 : struct, global::TestSpace.IAmForStruct where T2 : unmanaged, global::TestSpace.IAmForStruct
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(id, value) =
-						(self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@id, @value) =
+						(@self.Id, @self.Value);
 				}
 			}
 			

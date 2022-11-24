@@ -6,6 +6,44 @@ namespace AutoDeconstruct.Tests;
 public static class AutoDeconstructGeneratorInstanceTests
 {
 	[Test]
+	public static async Task GenerateWithPropertyNameThatIsAKeywordAsync()
+	{
+		var code =
+			"""
+			using System;
+
+			namespace TestSpace
+			{
+				public class Test
+				{ 
+					public string? Namespace { get; set; }
+				}
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+
+			namespace TestSpace;
+
+			public static partial class TestExtensions
+			{
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
+				{
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					@namespace = @self.Namespace;
+				}
+			}
+
+			""";
+
+		await TestAssistants.RunAsync(code,
+			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+	}
+
+	[Test]
 	public static async Task GenerateWithReferenceTypeAndOneProperty()
 	{
 		var code =
@@ -29,10 +67,10 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					id = self.Id;
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					@id = @self.Id;
 				}
 			}
 
@@ -69,11 +107,11 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? name, out global::System.Guid id, out int value)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(name, id, value) =
-						(self.Name, self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@name, @id, @value) =
+						(@self.Name, @self.Id, @self.Value);
 				}
 			}
 
@@ -108,9 +146,9 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 				{
-					id = self.Id;
+					@id = @self.Id;
 				}
 			}
 
@@ -147,10 +185,10 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? name, out global::System.Guid id, out int value)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 				{
-					(name, id, value) =
-						(self.Name, self.Id, self.Value);
+					(@name, @id, @value) =
+						(@self.Name, @self.Id, @self.Value);
 				}
 			}
 
@@ -185,10 +223,10 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? id)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					id = self.Id;
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					@id = @self.Id;
 				}
 			}
 
@@ -269,11 +307,11 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? name, out global::System.Guid id, out int value)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(name, id, value) =
-						(self.Name, self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@name, @id, @value) =
+						(@self.Name, @self.Id, @self.Value);
 				}
 			}
 
@@ -342,11 +380,11 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? name, out global::System.Guid id, out int value)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(name, id, value) =
-						(self.Name, self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@name, @id, @value) =
+						(@self.Name, @self.Id, @self.Value);
 				}
 			}
 
@@ -416,11 +454,11 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? name, out global::System.Guid id, out int value)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(name, id, value) =
-						(self.Name, self.Id, self.Value);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@name, @id, @value) =
+						(@self.Name, @self.Id, @self.Value);
 				}
 			}
 
@@ -461,10 +499,10 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class BaseTestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.BaseTest self, out int id)
+				public static void Deconstruct(this global::TestSpace.BaseTest @self, out int @id)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					id = self.Id;
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					@id = @self.Id;
 				}
 			}
 
@@ -478,11 +516,11 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self, out string? name, out int id)
+				public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out int @id)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self);
-					(name, id) =
-						(self.Name, self.Id);
+					global::System.ArgumentNullException.ThrowIfNull(@self);
+					(@name, @id) =
+						(@self.Name, @self.Id);
 				}
 			}
 
@@ -521,10 +559,10 @@ public static class AutoDeconstructGeneratorInstanceTests
 
 			public static partial class TestExtensions
 			{
-				public static void Deconstruct(this global::TestSpace.Test self1, out string? self)
+				public static void Deconstruct(this global::TestSpace.Test @self1, out string? @self)
 				{
-					global::System.ArgumentNullException.ThrowIfNull(self1);
-					self = self1.Self;
+					global::System.ArgumentNullException.ThrowIfNull(@self1);
+					@self = @self1.Self;
 				}
 			}
 
