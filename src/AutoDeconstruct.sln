@@ -10,11 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{239016B0-B22D-46E6-855D-5F3522932A47}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\changelog.md = ..\changelog.md
 		Directory.Build.props = Directory.Build.props
 		..\LICENSE = ..\LICENSE
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDeconstruct.IntegrationTests", "AutoDeconstruct.IntegrationTests\AutoDeconstruct.IntegrationTests.csproj", "{F635DF86-3BF2-4B01-A626-7A58B71EC462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoDeconstruct.IntegrationTests", "AutoDeconstruct.IntegrationTests\AutoDeconstruct.IntegrationTests.csproj", "{F635DF86-3BF2-4B01-A626-7A58B71EC462}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
