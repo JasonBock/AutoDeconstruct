@@ -34,16 +34,24 @@ public sealed class AutoDeconstructGenerator
 		var provider = context.SyntaxProvider
 			 .CreateSyntaxProvider(IsSyntaxTargetForGeneration, TransformTargets)
 			 .Where(static _ => _ is not null);
-		var output = context.AnalyzerConfigOptionsProvider.Combine(provider.Collect());
+		var compilationNodes = context.CompilationProvider.Combine(provider.Collect());
+		var output = context.AnalyzerConfigOptionsProvider.Combine(compilationNodes);
 
 		context.RegisterSourceOutput(output,
-			(context, source) => CreateOutput(source.Right, source.Left, context));
+			(context, source) => CreateOutput(source.Right.Left, source.Right.Right, source.Left, context));
 	}
 
-	private static void CreateOutput(ImmutableArray<ISymbol> symbols, AnalyzerConfigOptionsProvider options, SourceProductionContext context)
+	private static void CreateOutput(Compilation compilation,
+		ImmutableArray<ISymbol> symbols, AnalyzerConfigOptionsProvider options, SourceProductionContext context)
 	{
-		var types = symbols.Where(_ => _ is INamedTypeSymbol).Distinct(SymbolEqualityComparer.Default)
-			.Cast<INamedTypeSymbol>();
+		var noAutoDeconstructAttribute = compilation.GetTypeByMetadataName(typeof(NoAutoDeconstructAttribute).FullName);
+
+		var types = symbols.Where(_ => _ is INamedTypeSymbol)
+			.Distinct(SymbolEqualityComparer.Default)
+			.Cast<INamedTypeSymbol>()
+			.Where(_ => !_.GetAttributes().Any(data =>
+				data.AttributeClass is not null &&
+				data.AttributeClass.Equals(noAutoDeconstructAttribute, SymbolEqualityComparer.Default)));
 
 		var methods = symbols.Where(_ => _ is IMethodSymbol).Cast<IMethodSymbol>()
 			.ToLookup(_ => _.Parameters[0].Type, _ => _, SymbolEqualityComparer.Default);
