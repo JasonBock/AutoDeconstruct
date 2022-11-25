@@ -1,9 +1,13 @@
 ﻿using AutoDeconstruct.Configuration;
+using AutoDeconstruct.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
+using System.CodeDom.Compiler;
 using System.Collections.Immutable;
+using System.Text;
 
 namespace AutoDeconstruct;
 
@@ -44,46 +48,65 @@ public sealed class AutoDeconstructGenerator
 	private static void CreateOutput(Compilation compilation,
 		ImmutableArray<ISymbol> symbols, AnalyzerConfigOptionsProvider options, SourceProductionContext context)
 	{
-		var noAutoDeconstructAttribute = compilation.GetTypeByMetadataName(typeof(NoAutoDeconstructAttribute).FullName);
-
-		var types = symbols.Where(_ => _ is INamedTypeSymbol)
-			.Distinct(SymbolEqualityComparer.Default)
-			.Cast<INamedTypeSymbol>()
-			.Where(_ => !_.GetAttributes().Any(data =>
-				data.AttributeClass is not null &&
-				data.AttributeClass.Equals(noAutoDeconstructAttribute, SymbolEqualityComparer.Default)));
-
-		var methods = symbols.Where(_ => _ is IMethodSymbol).Cast<IMethodSymbol>()
-			.ToLookup(_ => _.Parameters[0].Type, _ => _, SymbolEqualityComparer.Default);
-
-		foreach (var type in types)
+		if (symbols.Length > 0)
 		{
-			var accessiblePropertiesBuilder = ImmutableArray.CreateBuilder<IPropertySymbol>();
+			var noAutoDeconstructAttribute = compilation.GetTypeByMetadataName(typeof(NoAutoDeconstructAttribute).FullName);
 
-			var targetType = type;
+			var types = symbols.Where(_ => _ is INamedTypeSymbol)
+				.Distinct(SymbolEqualityComparer.Default)
+				.Cast<INamedTypeSymbol>()
+				.Where(_ => !_.GetAttributes().Any(data =>
+					data.AttributeClass is not null &&
+					data.AttributeClass.Equals(noAutoDeconstructAttribute, SymbolEqualityComparer.Default)));
 
-			while (targetType is not null)
+			var methods = symbols.Where(_ => _ is IMethodSymbol).Cast<IMethodSymbol>()
+				.ToLookup(_ => _.Parameters[0].Type, _ => _, SymbolEqualityComparer.Default);
+
+			var configurationValues = new ConfigurationValues(options, symbols[0].DeclaringSyntaxReferences[0].SyntaxTree);
+			using var writer = new StringWriter();
+			using var indentWriter = new IndentedTextWriter(writer,
+				configurationValues.IndentStyle == IndentStyle.Tab ? "\t" : new string(' ', (int)configurationValues.IndentSize));
+			indentWriter.WriteLines(
+				"""
+				#nullable enable
+
+				""");
+
+			var wasBuildInvoked = false;
+
+			foreach (var type in types)
 			{
-				accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
-					.Where(_ => !_.IsIndexer && _.GetMethod is not null &&
-						_.GetMethod.DeclaredAccessibility == Accessibility.Public));
-				targetType = targetType.BaseType;
+				var accessiblePropertiesBuilder = ImmutableArray.CreateBuilder<IPropertySymbol>();
+
+				var targetType = type;
+
+				while (targetType is not null)
+				{
+					accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
+						.Where(_ => !_.IsIndexer && _.GetMethod is not null &&
+							_.GetMethod.DeclaredAccessibility == Accessibility.Public));
+					targetType = targetType.BaseType;
+				}
+
+				var accessibleProperties = accessiblePropertiesBuilder.ToImmutable();
+
+				if (accessibleProperties.Length > 0 &&
+					!type.GetMembers().OfType<IMethodSymbol>()
+						.Any(_ => _.Name == AutoDeconstructGenerator.DeconstructName &&
+							!_.IsStatic &&
+							_.Parameters.Count(p => p.RefKind == RefKind.Out) == _.Parameters.Length &&
+							_.Parameters.Length == accessibleProperties.Length) &&
+					(!methods[type].Any(_ => _.Parameters.Length - 1 == accessibleProperties.Length)))
+				{
+					AutoDeconstructBuilder.Build(indentWriter, type, accessibleProperties);
+					wasBuildInvoked = true;
+				}
 			}
 
-			var accessibleProperties = accessiblePropertiesBuilder.ToImmutable();
-
-			if (accessibleProperties.Length > 0 &&
-				!type.GetMembers().OfType<IMethodSymbol>()
-					.Any(_ => _.Name == AutoDeconstructGenerator.DeconstructName &&
-						!_.IsStatic &&
-						_.Parameters.Count(p => p.RefKind == RefKind.Out) == _.Parameters.Length &&
-						_.Parameters.Length == accessibleProperties.Length) &&
-				(!methods[type].Any(_ => _.Parameters.Length - 1 == accessibleProperties.Length)))
+			if(wasBuildInvoked)
 			{
-				var configurationValues = new ConfigurationValues(options, type.DeclaringSyntaxReferences[0].SyntaxTree);
-				var builder = new AutoDeconstructBuilder(configurationValues,
-					type, accessibleProperties);
-				context.AddSource($"{type.Name}_AutoDeconstruct.g.cs", builder.Text);
+				var text = SourceText.From(writer.ToString(), Encoding.UTF8);
+				context.AddSource("AutoDeconstruct.g.cs", text);
 			}
 		}
 	}

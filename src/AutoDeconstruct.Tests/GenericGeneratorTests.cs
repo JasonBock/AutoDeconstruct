@@ -26,22 +26,23 @@ public static class GenericGeneratorTests
 			"""
 			#nullable enable
 			
-			namespace TestSpace;
-			
-			public static partial class TestExtensions
+			namespace TestSpace
 			{
-				public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
+				public static partial class TestExtensions
 				{
-					global::System.ArgumentNullException.ThrowIfNull(@self);
-					(@id, @value) =
-						(@self.Id, @self.Value);
+					public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						(@id, @value) =
+							(@self.Id, @self.Value);
+					}
 				}
 			}
 			
 			""";
 
 		await TestAssistants.RunAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
@@ -67,23 +68,24 @@ public static class GenericGeneratorTests
 			"""
 			#nullable enable
 			
-			namespace TestSpace;
-			
-			public static partial class TestExtensions
+			namespace TestSpace
 			{
-				public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
-					where T : class
+				public static partial class TestExtensions
 				{
-					global::System.ArgumentNullException.ThrowIfNull(@self);
-					(@id, @value) =
-						(@self.Id, @self.Value);
+					public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
+						where T : class
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						(@id, @value) =
+							(@self.Id, @self.Value);
+					}
 				}
 			}
 			
 			""";
 
 		await TestAssistants.RunAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
@@ -108,22 +110,23 @@ public static class GenericGeneratorTests
 			"""
 			#nullable enable
 			
-			namespace TestSpace;
-			
-			public static partial class TestExtensions
+			namespace TestSpace
 			{
-				public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
+				public static partial class TestExtensions
 				{
-					global::System.ArgumentNullException.ThrowIfNull(@self);
-					(@id, @value) =
-						(@self.Id, @self.Value);
+					public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						(@id, @value) =
+							(@self.Id, @self.Value);
+					}
 				}
 			}
 			
 			""";
 
 		await TestAssistants.RunAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 
@@ -152,23 +155,24 @@ public static class GenericGeneratorTests
 			"""
 			#nullable enable
 			
-			namespace TestSpace;
-			
-			public static partial class TestExtensions
+			namespace TestSpace
 			{
-				public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
-					where T1 : struct, global::TestSpace.IAmForStruct where T2 : unmanaged, global::TestSpace.IAmForStruct
+				public static partial class TestExtensions
 				{
-					global::System.ArgumentNullException.ThrowIfNull(@self);
-					(@id, @value) =
-						(@self.Id, @self.Value);
+					public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
+						where T1 : struct, global::TestSpace.IAmForStruct where T2 : unmanaged, global::TestSpace.IAmForStruct
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						(@id, @value) =
+							(@self.Id, @self.Value);
+					}
 				}
 			}
 			
 			""";
 
 		await TestAssistants.RunAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "Test_AutoDeconstruct.g.cs", generatedCode) },
+			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
 			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
 	}
 }
