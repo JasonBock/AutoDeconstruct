@@ -105,8 +105,8 @@ public sealed class AutoDeconstructGenerator
 
 			if(wasBuildInvoked)
 			{
-				var text = SourceText.From(writer.ToString(), Encoding.UTF8);
-				context.AddSource("AutoDeconstruct.g.cs", text);
+				context.AddSource("AutoDeconstruct.g.cs", 
+					SourceText.From(writer.ToString(), Encoding.UTF8));
 			}
 		}
 	}
