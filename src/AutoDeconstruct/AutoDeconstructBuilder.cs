@@ -5,16 +5,28 @@ using System.Collections.Immutable;
 
 namespace AutoDeconstruct;
 
+internal record TypeSymbolModel(
+	string? ContainingNamespace,
+	string Name,
+	string GenericParameters,
+	string FullyQualifiedName,
+	string Constraints,
+	bool IsValueType,
+	EquatableArray<PropertySymbolModel> AccessibleProperties);
+
+internal record PropertySymbolModel(string Name, string TypeFullyQualifiedName);
+
+
 internal static class AutoDeconstructBuilder
 {
 	internal static void Build(IndentedTextWriter writer,
-		INamedTypeSymbol type, ImmutableArray<IPropertySymbol> properties)
+		TypeSymbolModel type, ImmutableArray<PropertySymbolModel> properties)
 	{
-		if (!type.ContainingNamespace.IsGlobalNamespace)
+		if (type.ContainingNamespace is not null)
 		{
 			writer.WriteLines(
 				$$"""
-				namespace {{type.ContainingNamespace.ToDisplayString()}}
+				namespace {{type.ContainingNamespace}}
 				{
 				""");
 			writer.Indent++;
@@ -29,22 +41,19 @@ internal static class AutoDeconstructBuilder
 
 		// TODO: I'd like to not call ToCamelCase() three different times,
 		// so this may be a spot to optimize.
-		var outParameters = string.Join(", ", properties.Select(_ =>
+		var outParameters = string.Join(", ", properties.Select(p =>
 		{
-			return $"out {_.Type.GetFullyQualifiedName()} @{_.Name.ToCamelCase()}";
+			return $"out {p.TypeFullyQualifiedName} @{p.Name.ToCamelCase()}";
 		}));
 
-		var namingContext = new VariableNamingContext(properties.Select(_ => _.Name.ToCamelCase()).ToImmutableArray());
-		var genericParameters = type.TypeParameters.Length > 0 ?
-			$"<{string.Join(", ", type.TypeParameters.Select(_ => _.Name))}>" :
-			string.Empty;
+		var namingContext = new VariableNamingContext(properties.Select(p => p.Name.ToCamelCase()).ToImmutableArray());
 
 		writer.WriteLine(
-			$$"""public static void Deconstruct{{genericParameters}}(this {{type.GetFullyQualifiedName()}} @{{namingContext["self"]}}, {{outParameters}})""");
+			$$"""public static void Deconstruct{{type.GenericParameters}}(this {{type.FullyQualifiedName}} @{{namingContext["self"]}}, {{outParameters}})""");
 
-		var constraints = type.GetConstraints();
+		var constraints = type.Constraints;
 
-		if(constraints.Length > 0) 
+		if (constraints.Length > 0)
 		{
 			writer.Indent++;
 			writer.WriteLine(constraints);
@@ -65,9 +74,9 @@ internal static class AutoDeconstructBuilder
 		}
 		else
 		{
-			writer.WriteLine($"({string.Join(", ", properties.Select(_ => $"@{_.Name.ToCamelCase()}"))}) =");
+			writer.WriteLine($"({string.Join(", ", properties.Select(p => $"@{p.Name.ToCamelCase()}"))}) =");
 			writer.Indent++;
-			writer.WriteLine($"({string.Join(", ", properties.Select(_ => $"@{namingContext["self"]}.{_.Name}"))});");
+			writer.WriteLine($"({string.Join(", ", properties.Select(p => $"@{namingContext["self"]}.{p.Name}"))});");
 			writer.Indent--;
 		}
 
@@ -76,7 +85,7 @@ internal static class AutoDeconstructBuilder
 		writer.Indent--;
 		writer.WriteLine("}");
 
-		if (!type.ContainingNamespace.IsGlobalNamespace)
+		if (type.ContainingNamespace is not null)
 		{
 			writer.Indent--;
 			writer.WriteLine("}");

@@ -1,12 +1,35 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace AutoDeconstruct.Extensions;
 
 internal static class INamedTypeSymbolExtensions
 {
+   internal static string GetGenericParameters(this INamedTypeSymbol self) => self.TypeParameters.Length > 0 ?
+		   $"<{string.Join(", ", self.TypeParameters.Select(t => t.Name))}>" :
+		   string.Empty;
+
+	internal static EquatableArray<PropertySymbolModel> GetAccessibleProperties(this INamedTypeSymbol self)
+	{
+		var targetType = self;
+		var accessiblePropertiesBuilder = ImmutableArray.CreateBuilder<PropertySymbolModel>();
+
+		while (targetType is not null)
+		{
+			accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
+				.Where(p => !p.IsIndexer && p.GetMethod is not null &&
+					p.GetMethod.DeclaredAccessibility == Accessibility.Public)
+				.Select(p => new PropertySymbolModel(p.Name, p.Type.GetFullyQualifiedName())));
+			targetType = targetType.BaseType;
+		}
+
+		return accessiblePropertiesBuilder.ToImmutable();
+	}
+
+
 	internal static string GetConstraints(this INamedTypeSymbol self)
 	{
-		if(self.TypeParameters.Length == 0)
+		if (self.TypeParameters.Length == 0)
 		{
 			return string.Empty;
 		}
@@ -14,11 +37,11 @@ internal static class INamedTypeSymbolExtensions
 		{
 			var constraints = new List<string>(self.TypeParameters.Length);
 
-			foreach(var parameter in self.TypeParameters) 
+			foreach (var parameter in self.TypeParameters)
 			{
 				var parameterConstraints = parameter.GetConstraints();
 
-				if(parameterConstraints.Length > 0)
+				if (parameterConstraints.Length > 0)
 				{
 					constraints.Add(parameterConstraints);
 				}
