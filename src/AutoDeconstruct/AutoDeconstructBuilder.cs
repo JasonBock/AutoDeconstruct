@@ -5,18 +5,6 @@ using System.Collections.Immutable;
 
 namespace AutoDeconstruct;
 
-internal record TypeSymbolModel(
-	string? ContainingNamespace,
-	string Name,
-	string GenericParameters,
-	string FullyQualifiedName,
-	string Constraints,
-	bool IsValueType,
-	EquatableArray<PropertySymbolModel> AccessibleProperties);
-
-internal record PropertySymbolModel(string Name, string TypeFullyQualifiedName);
-
-
 internal static class AutoDeconstructBuilder
 {
 	internal static void Build(IndentedTextWriter writer,

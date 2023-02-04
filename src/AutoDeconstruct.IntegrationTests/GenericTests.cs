@@ -4,12 +4,6 @@ namespace AutoDeconstruct.IntegrationTests;
 
 public static class GenericTests
 {
-	public class GenericThings<T1, T2>
-	{
-		public required T1 Thing1 { get; set; }
-		public required T2 Thing2 { get; set; }
-	}
-
 	[Test]
 	public static void DeconstructWithGenerics()
 	{
@@ -22,4 +16,10 @@ public static class GenericTests
 			Assert.That(newThing2, Is.EqualTo("2"));
 		});
 	}
+}
+
+public class GenericThings<T1, T2>
+{
+	public required T1 Thing1 { get; set; }
+	public required T2 Thing2 { get; set; }
 }
