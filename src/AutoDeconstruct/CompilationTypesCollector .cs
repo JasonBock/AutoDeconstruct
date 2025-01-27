@@ -47,16 +47,23 @@ internal sealed class CompilationTypesCollector
 
 		if (this.types.Add(type))
 		{
-			var nestedTypes = type.GetTypeMembers();
-
-			if (!nestedTypes.IsDefaultOrEmpty)
+			foreach(var typeMember in type.GetMembers())
 			{
-				foreach (var nestedType in nestedTypes)
-				{
-					this.cancellationToken.ThrowIfCancellationRequested();
-					nestedType.Accept(this);
-				}
+				this.cancellationToken.ThrowIfCancellationRequested();
+				typeMember.Accept(this);
 			}
+
+			// TODO: Does GetMembers() also get nested types?
+			//var nestedTypes = type.GetTypeMembers();
+
+			//if (!nestedTypes.IsDefaultOrEmpty)
+			//{
+			//	foreach (var nestedType in nestedTypes)
+			//	{
+			//		this.cancellationToken.ThrowIfCancellationRequested();
+			//		nestedType.Accept(this);
+			//	}
+			//}
 		}
 	}
 

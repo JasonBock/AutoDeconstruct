@@ -9,10 +9,12 @@ internal static class GenericGeneratorTests
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test<T>
 				{ 
 					public T Id { get; set; }
@@ -41,7 +43,7 @@ internal static class GenericGeneratorTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -50,10 +52,12 @@ internal static class GenericGeneratorTests
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test<T>
 					where T : class
 				{ 
@@ -84,7 +88,7 @@ internal static class GenericGeneratorTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -93,10 +97,12 @@ internal static class GenericGeneratorTests
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test<T1, T2>
 				{ 
 					public T1 Id { get; set; }
@@ -125,7 +131,7 @@ internal static class GenericGeneratorTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -134,12 +140,14 @@ internal static class GenericGeneratorTests
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
 				public interface IAmForStruct { }
 
+				[AutoDeconstruct]
 				public class Test<T1, T2>
 					where T1 : struct, IAmForStruct
 					where T2 : unmanaged, IAmForStruct
@@ -171,7 +179,7 @@ internal static class GenericGeneratorTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 }

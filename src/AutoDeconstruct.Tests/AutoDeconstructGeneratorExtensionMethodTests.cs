@@ -5,16 +5,18 @@ namespace AutoDeconstruct.Tests;
 internal static class AutoDeconstructGeneratorExtensionMethodTests
 {
 	[Test]
-	public static async Task GenerateWhereThisTypeDoesNotMatch()
+	public static async Task GenerateWhereThisTypeDoesNotMatchAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
 				public class NotATest { }
 
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Id { get; set; }
@@ -47,21 +49,23 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWhereOutParameterCountDoesNotMatch()
+	public static async Task GenerateWhereOutParameterCountDoesNotMatchAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
 				public class NotATest { }
 
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Id { get; set; }
@@ -94,21 +98,23 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWhereOutParameterCountMatches()
+	public static async Task GenerateWhereOutParameterCountMatchesAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
 				public class NotATest { }
 
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Id { get; set; }

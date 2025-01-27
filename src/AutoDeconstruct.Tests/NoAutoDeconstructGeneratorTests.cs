@@ -11,6 +11,8 @@ internal static class NoAutoDeconstructGeneratorTests
 			"""
 			using AutoDeconstruct;
 
+			[assembly: AutoDeconstruct]
+
 			namespace TestSpace
 			{
 				[NoAutoDeconstruct]
@@ -33,6 +35,8 @@ internal static class NoAutoDeconstructGeneratorTests
 			"""
 			using AutoDeconstruct;
 
+			[assembly: AutoDeconstruct]
+			
 			namespace TestSpace
 			{
 				[NoAutoDeconstruct]
@@ -55,6 +59,8 @@ internal static class NoAutoDeconstructGeneratorTests
 			"""
 			using AutoDeconstruct;
 
+			[assembly: AutoDeconstruct]
+			
 			namespace TestSpace
 			{
 				[NoAutoDeconstruct]

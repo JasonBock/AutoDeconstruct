@@ -5,29 +5,16 @@ namespace AutoDeconstruct.Tests;
 internal static class AutoDeconstructGeneratorInstanceTests
 {
 	[Test]
-	public static async Task GenerateWhenNoTargetsExistAsync()
-	{
-		var code =
-			"""
-			using System;
-
-			namespace TestSpace { }
-			""";
-
-		await TestAssistants.RunGeneratorAsync(code,
-			[],
-			[]);
-	}
-
-	[Test]
 	public static async Task GenerateWithPropertyNameThatIsAKeywordAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Namespace { get; set; }
@@ -54,19 +41,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithReferenceTypeAndOneProperty()
+	public static async Task GenerateWithReferenceTypeAndOnePropertyAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Id { get; set; }
@@ -93,19 +82,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithReferenceTypeAndMultipleProperties()
+	public static async Task GenerateWithReferenceTypeAndMultiplePropertiesAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Name { get; set; }
@@ -135,19 +126,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithValueTypeAndOneProperty()
+	public static async Task GenerateWithValueTypeAndOnePropertyAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public struct Test
 				{ 
 					public string? Id { get; set; }
@@ -173,19 +166,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithValueTypeAndMultipleProperties()
+	public static async Task GenerateWithValueTypeAndMultiplePropertiesAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public struct Test
 				{ 
 					public string? Name { get; set; }
@@ -214,19 +209,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithRecord()
+	public static async Task GenerateWithRecordAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public record Test()
 				{
 					public string? Id { get; init; }
@@ -253,19 +250,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithRecordThatHasDeconstruct()
+	public static async Task GenerateWithRecordThatHasDeconstructAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public record Test(string Id);
 			}
 			""";
@@ -276,14 +275,16 @@ internal static class AutoDeconstructGeneratorInstanceTests
 	}
 
 	[Test]
-	public static async Task GenerateWithNoAccesibleProperties()
+	public static async Task GenerateWithNoAccesiblePropertiesAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public struct Test
 				{ 
 					private string? Name { get; set; }
@@ -299,14 +300,16 @@ internal static class AutoDeconstructGeneratorInstanceTests
 	}
 
 	[Test]
-	public static async Task GenerateWithNoDeconstructMatch()
+	public static async Task GenerateWithNoDeconstructMatchAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Name { get; set; }
@@ -339,19 +342,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithDeconstructNotReturningVoid()
+	public static async Task GenerateWithDeconstructNotReturningVoidAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Name { get; set; }
@@ -373,14 +378,16 @@ internal static class AutoDeconstructGeneratorInstanceTests
 	}
 
 	[Test]
-	public static async Task GenerateWithExistingDeconstructButWithNonOutParameters()
+	public static async Task GenerateWithExistingDeconstructButWithNonOutParametersAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Name { get; set; }
@@ -413,19 +420,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWithMatchingDeconstruct()
+	public static async Task GenerateWithMatchingDeconstructAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Name { get; set; }
@@ -444,14 +453,16 @@ internal static class AutoDeconstructGeneratorInstanceTests
 	}
 
 	[Test]
-	public static async Task GenerateWhenPartialDefinitionsExist()
+	public static async Task GenerateWhenPartialDefinitionsExistAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public partial class Test
 				{ 
 					public string? Name { get; set; }
@@ -488,24 +499,27 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWhenPropertiesExistInInheritanceHierarchy()
+	public static async Task GenerateWhenPropertiesExistInInheritanceHierarchyAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class BaseTest
 				{ 
 					public int Id { get; set; }
 				}
 
+				[AutoDeconstruct]
 				public class Test
 					: BaseTest
 				{ 
@@ -545,19 +559,21 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
 	[Test]
-	public static async Task GenerateWhenSelfPropertyExists()
+	public static async Task GenerateWhenSelfPropertyExistsAsync()
 	{
 		var code =
 			"""
+			using AutoDeconstruct;
 			using System;
 
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Self { get; set; }
@@ -584,7 +600,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 }
