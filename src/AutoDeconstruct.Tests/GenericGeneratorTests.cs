@@ -1,9 +1,8 @@
-﻿using Microsoft.CodeAnalysis.Testing;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace AutoDeconstruct.Tests;
 
-public static class GenericGeneratorTests
+internal static class GenericGeneratorTests
 {
 	[Test]
 	public static async Task GenerateWhenTypeHasGenericsAsync()
@@ -41,9 +40,9 @@ public static class GenericGeneratorTests
 			
 			""";
 
-		await TestAssistants.RunAsync(code,
+		await TestAssistants.RunGeneratorAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+			[]);
 	}
 
 	[Test]
@@ -84,9 +83,9 @@ public static class GenericGeneratorTests
 			
 			""";
 
-		await TestAssistants.RunAsync(code,
+		await TestAssistants.RunGeneratorAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+			[]);
 	}
 
 	[Test]
@@ -125,9 +124,9 @@ public static class GenericGeneratorTests
 			
 			""";
 
-		await TestAssistants.RunAsync(code,
+		await TestAssistants.RunGeneratorAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+			[]);
 	}
 
 	[Test]
@@ -171,8 +170,8 @@ public static class GenericGeneratorTests
 			
 			""";
 
-		await TestAssistants.RunAsync(code,
+		await TestAssistants.RunGeneratorAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+			[]);
 	}
 }

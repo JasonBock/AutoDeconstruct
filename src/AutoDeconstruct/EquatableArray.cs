@@ -12,11 +12,8 @@
 #pragma warning disable IDE0023
 #pragma warning disable IDE0024
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace AutoDeconstruct;
@@ -163,7 +160,7 @@ internal readonly struct EquatableArray<T> : IEquatable<EquatableArray<T>>, IEnu
 	/// <returns>The newly instantiated array.</returns>
 	public T[] ToArray()
 	{
-		return AsImmutableArray().ToArray();
+		return [.. AsImmutableArray()];
 	}
 
 	/// <summary>

@@ -1,9 +1,8 @@
-﻿using Microsoft.CodeAnalysis.Testing;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace AutoDeconstruct.Tests;
 
-public static class NoAutoDeconstructGeneratorTests
+internal static class NoAutoDeconstructGeneratorTests
 {
 	[Test]
 	public static async Task GenerateWhenAttributeExistsOnClassAsync()
@@ -22,9 +21,9 @@ public static class NoAutoDeconstructGeneratorTests
 			}
 			""";
 
-		await TestAssistants.RunAsync(code,
-			Enumerable.Empty<(Type, string, string)>(),
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+		await TestAssistants.RunGeneratorAsync(code,
+			[],
+			[]);
 	}
 
 	[Test]
@@ -44,9 +43,9 @@ public static class NoAutoDeconstructGeneratorTests
 			}
 			""";
 
-		await TestAssistants.RunAsync(code,
-			Enumerable.Empty<(Type, string, string)>(),
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+		await TestAssistants.RunGeneratorAsync(code,
+			[],
+			[]);
 	}
 
 	[Test]
@@ -66,8 +65,8 @@ public static class NoAutoDeconstructGeneratorTests
 			}
 			""";
 
-		await TestAssistants.RunAsync(code,
-			Enumerable.Empty<(Type, string, string)>(),
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+		await TestAssistants.RunGeneratorAsync(code,
+			[],
+			[]);
 	}
 }

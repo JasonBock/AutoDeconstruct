@@ -1,9 +1,8 @@
-﻿using Microsoft.CodeAnalysis.Testing;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace AutoDeconstruct.Tests;
 
-public static class AutoDeconstructGeneratorExtensionMethodTests
+internal static class AutoDeconstructGeneratorExtensionMethodTests
 {
 	[Test]
 	public static async Task GenerateWhereThisTypeDoesNotMatch()
@@ -47,9 +46,9 @@ public static class AutoDeconstructGeneratorExtensionMethodTests
 			
 			""";
 
-		await TestAssistants.RunAsync(code,
+		await TestAssistants.RunGeneratorAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+			[]);
 	}
 
 	[Test]
@@ -94,9 +93,9 @@ public static class AutoDeconstructGeneratorExtensionMethodTests
 			
 			""";
 
-		await TestAssistants.RunAsync(code,
+		await TestAssistants.RunGeneratorAsync(code,
 			new[] { (typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode) },
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+			[]);
 	}
 
 	[Test]
@@ -123,8 +122,8 @@ public static class AutoDeconstructGeneratorExtensionMethodTests
 			}
 			""";
 
-		await TestAssistants.RunAsync(code,
-			Enumerable.Empty<(Type, string, string)>(),
-			Enumerable.Empty<DiagnosticResult>()).ConfigureAwait(false);
+		await TestAssistants.RunGeneratorAsync(code,
+			[],
+			[]);
 	}
 }

@@ -1,7 +1,5 @@
 ﻿using AutoDeconstruct.Extensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
@@ -10,75 +8,84 @@ using System.Text;
 namespace AutoDeconstruct;
 
 [Generator]
-public sealed class AutoDeconstructGenerator : IIncrementalGenerator
+internal sealed class AutoDeconstructGenerator
+	: IIncrementalGenerator
 {
-	private const string DeconstructName = "Deconstruct";
-
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		var typeProvider = context.SyntaxProvider
-			.CreateSyntaxProvider(
-				static (node, _) => node is TypeDeclarationSyntax,
-				static (context, token) =>
+		static TypeSymbolModel? GetModel(INamedTypeSymbol type)
+		{
+			if (type.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == "AutoDeconstruct.NoAutoDeconstructAttribute"))
+			{
+				return null;
+			}
+
+			var accessibleProperties = type.GetAccessibleProperties();
+			if (accessibleProperties.IsEmpty ||
+				type.GetMembers().OfType<IMethodSymbol>().Any(
+					m => m.Name == Shared.DeconstructName &&
+					!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
+					m.Parameters.All(p => p.RefKind == RefKind.Out)))
+			{
+				// There is an existing instance deconstruct.
+				return null;
+			}
+
+			return new TypeSymbolModel(type.ContainingNamespace.ToString(), type.Name,
+				type.GetGenericParameters(), type.GetFullyQualifiedName(),
+				type.GetConstraints(), type.IsValueType, accessibleProperties);
+		}
+
+		var types = context.SyntaxProvider.ForAttributeWithMetadataName(
+			"AutoDeconstruct.AutoDeconstructAttribute", (_, _) => true,
+			(generatorContext, token) =>
+			{
+				var types = new List<TypeSymbolModel>();
+
+				var collectedTypes = new CompilationTypesCollector(
+					generatorContext.SemanticModel.Compilation.Assembly, token);
+
+				for (var i = 0; i < generatorContext.Attributes.Length; i++)
 				{
-					var symbol = context.SemanticModel.GetDeclaredSymbol((TypeDeclarationSyntax)context.Node, token);
-					if (symbol is null)
+					// Is the attribute on the assembly, or a type?
+					var attributeClass = generatorContext.Attributes[i];
+
+					if (generatorContext.TargetSymbol is IAssemblySymbol assemblySymbol)
 					{
-						return null;
+						foreach (var assemblyType in collectedTypes.Types)
+						{
+							var typeModel = GetModel(assemblyType);
+
+							if (typeModel is not null)
+							{
+								types.Add(typeModel);
+							}
+						}
 					}
-					else if (symbol is INamedTypeSymbol namedTypeSymbol &&
-						namedTypeSymbol.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == "AutoDeconstruct.NoAutoDeconstructAttribute"))
+					else if (generatorContext.TargetSymbol is INamedTypeSymbol typeSymbol)
 					{
-						return null;
+						if (!collectedTypes.ExcludedTypes.Contains(typeSymbol))
+						{
+							var typeModel = GetModel(typeSymbol);
+
+							if (typeModel is not null)
+							{
+								types.Add(typeModel);
+							}
+						}
 					}
+				}
 
-					var accessibleProperties = symbol.GetAccessibleProperties();
-					if (accessibleProperties.IsEmpty ||
-						symbol.GetMembers().OfType<IMethodSymbol>().Any(
-							m => m.Name == AutoDeconstructGenerator.DeconstructName &&
-							!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
-							m.Parameters.All(p => p.RefKind == RefKind.Out)))
-					{
-						// There is an existing instance deconstruct.
-						return null;
-					}
+				return types;
+			})
+			.SelectMany((names, _) => names);
 
-					return new TypeSymbolModel(symbol.ContainingNamespace.ToString(), symbol.Name, symbol.GetGenericParameters(), symbol.GetFullyQualifiedName(), symbol.GetConstraints(), symbol.IsValueType, accessibleProperties);
-				})
-			.Where(static _ => _ is not null);
 
-		var excludedTypesHavingExtensionDeconstruct = context.SyntaxProvider
-			.CreateSyntaxProvider(
-				static (node, _) => node is MethodDeclarationSyntax methodNode &&
-					methodNode.Modifiers.Any(SyntaxKind.StaticKeyword) &&
-					methodNode.Identifier.ValueText == AutoDeconstructGenerator.DeconstructName &&
-					methodNode.ParameterList.Parameters.Count > 1 &&
-					methodNode.ParameterList.Parameters[0].Modifiers.Any(SyntaxKind.ThisKeyword) &&
-					(methodNode.ParameterList.Parameters.Count(parameter => parameter.Modifiers.Any(SyntaxKind.OutKeyword)) ==
-						methodNode.ParameterList.Parameters.Count - 1),
-				static (context, token) =>
-				{
-					var methodSymbol = context.SemanticModel.GetDeclaredSymbol((MethodDeclarationSyntax)context.Node, token);
-					if (methodSymbol?.Parameters[0].Type is not INamedTypeSymbol type)
-					{
-						return null;
-					}
-
-					var accessibleProperties = type.GetAccessibleProperties();
-					if (accessibleProperties.Length == methodSymbol.Parameters.Length - 1)
-					{
-						return new TypeSymbolModel(type.ContainingNamespace.ToString(), type.Name, type.GetGenericParameters(), type.GetFullyQualifiedName(), type.GetConstraints(), type.IsValueType, accessibleProperties);
-					}
-
-					return null;
-				})
-			.Where(static _ => _ is not null);
-
-		context.RegisterSourceOutput(typeProvider.Collect().Combine(excludedTypesHavingExtensionDeconstruct.Collect()),
-			(context, source) => CreateOutput(source.Left!, source.Right!, context));
+		context.RegisterSourceOutput(types.Collect(),
+			(context, source) => CreateOutput(source, context));
 	}
 
-	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, ImmutableArray<TypeSymbolModel> excludedTypes, SourceProductionContext context)
+	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, SourceProductionContext context)
 	{
 		if (types.Length > 0)
 		{
@@ -96,11 +103,8 @@ public sealed class AutoDeconstructGenerator : IIncrementalGenerator
 			{
 				var accessibleProperties = type.AccessibleProperties;
 
-				if (!excludedTypes.Contains(type))
-				{
-					AutoDeconstructBuilder.Build(indentWriter, type, accessibleProperties);
-					wasBuildInvoked = true;
-				}
+				AutoDeconstructBuilder.Build(indentWriter, type, accessibleProperties);
+				wasBuildInvoked = true;
 			}
 
 			if (wasBuildInvoked)

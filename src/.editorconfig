@@ -44,6 +44,9 @@ dotnet_diagnostic.CA1014.severity = none
 # CA1812: Program is an internal class...
 dotnet_diagnostic.CA1812.severity = none
 
+# CA2007: Consider calling ConfigureAwait
+dotnet_diagnostic.CA2007.severity = none
+
 dotnet_diagnostics.NU1603.severity = none
 
 # NUnit analyzer severity settings

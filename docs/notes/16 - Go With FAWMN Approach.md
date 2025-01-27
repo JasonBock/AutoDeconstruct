@@ -1,0 +1,3 @@
+* Make an analyzer to yell at the developer if `[AutoDeconstruct]` and `[NoAutoDeconstruct]` exist on the same type.
+* Consider making the generated extension method part of the type declaration if the type is `partial`
+* Add a flag to `[AutoDeconstruct]` to only do a full assembly search of extension method, something like `[AutoDeconstruct(SearchForExtensionMethods.Yes)]`. It would be `SearchForExtensionMethods.No` by default, you need to opt-in to do the search. Most of the time, the search is unnecessary.
