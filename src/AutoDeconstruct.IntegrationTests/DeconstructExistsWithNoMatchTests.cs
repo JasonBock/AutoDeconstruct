@@ -2,7 +2,7 @@
 
 namespace AutoDeconstruct.IntegrationTests;
 
-public static class DeconstructExistsWithNoMatchTests
+internal static class DeconstructExistsWithNoMatchTests
 {
 	[Test]
 	public static void RunDeconstruct()
@@ -29,7 +29,8 @@ public static class DeconstructExistsWithNoMatchTests
 	}
 }
 
-public sealed class DeconstructExistsWithNoMatch
+[AutoDeconstruct]
+internal sealed class DeconstructExistsWithNoMatch
 {
 	public string? Data { get; set; }
 	public Guid Id { get; set; }

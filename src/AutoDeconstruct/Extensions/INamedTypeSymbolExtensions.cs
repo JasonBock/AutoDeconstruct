@@ -18,7 +18,8 @@ internal static class INamedTypeSymbolExtensions
 		{
 			accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
 				.Where(p => !p.IsIndexer && p.GetMethod is not null &&
-					p.GetMethod.DeclaredAccessibility == Accessibility.Public)
+					(p.GetMethod.DeclaredAccessibility == Accessibility.Public ||
+					p.GetMethod.DeclaredAccessibility == Accessibility.Internal))
 				.Select(p => new PropertySymbolModel(p.Name, p.Type.GetFullyQualifiedName())));
 			targetType = targetType.BaseType;
 		}

@@ -2,7 +2,7 @@
 
 namespace AutoDeconstruct.IntegrationTests;
 
-public static class GenericTests
+internal static class GenericTests
 {
 	[Test]
 	public static void DeconstructWithGenerics()
@@ -18,8 +18,9 @@ public static class GenericTests
 	}
 }
 
-public class GenericThings<T1, T2>
+[AutoDeconstruct]
+internal class GenericThings<T1, T2>
 {
-	public required T1 Thing1 { get; set; }
-	public required T2 Thing2 { get; set; }
+	internal required T1 Thing1 { get; set; }
+	internal required T2 Thing2 { get; set; }
 }

@@ -2,7 +2,7 @@
 
 namespace AutoDeconstruct.IntegrationTests;
 
-public static class InheritanceTests
+internal static class InheritanceTests
 {
 	[Test]
 	public static void RunDeconstruct()
@@ -26,13 +26,15 @@ public static class InheritanceTests
 	}
 }
 
-public class BaseInheritance
+[AutoDeconstruct]
+internal class BaseInheritance
 {
-	public int Id { get; set; }
+	internal int Id { get; set; }
 }
 
-public class DerivedInheritance
+[AutoDeconstruct]
+internal class DerivedInheritance
 	: BaseInheritance
 {
-	public string? Data { get; set; }
+	internal string? Data { get; set; }
 }

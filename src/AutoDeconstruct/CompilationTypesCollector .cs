@@ -69,10 +69,10 @@ internal sealed class CompilationTypesCollector
 
 	public override void VisitMethod(IMethodSymbol symbol)
 	{
-		if (symbol.IsStatic &&
+		if (symbol.IsExtensionMethod &&
 			symbol.Name == Shared.DeconstructName &&
+			symbol.ReturnsVoid &&
 			symbol.Parameters.Length > 1 &&
-			symbol.Parameters[0].IsThis &&
 			symbol.Parameters.Count(_ => _.RefKind == RefKind.Out) == symbol.Parameters.Length - 1)
 		{
 			if (symbol.Parameters[0].Type is INamedTypeSymbol parameterType)
