@@ -1,3 +1,6 @@
-﻿namespace AutoDeconstruct;
+﻿using Microsoft.CodeAnalysis;
 
-internal record PropertySymbolModel(string Name, string TypeFullyQualifiedName);
+namespace AutoDeconstruct;
+
+internal record PropertySymbolModel(string Name, string TypeFullyQualifiedName,
+	Accessibility Accesibility, Accessibility TypeAccessibility);

@@ -1,6 +1,9 @@
-﻿namespace AutoDeconstruct;
+﻿using Microsoft.CodeAnalysis;
 
-internal record TypeSymbolModel(
+namespace AutoDeconstruct;
+
+internal sealed record TypeSymbolModel(
+	Accessibility Accessibility,
 	string? ContainingNamespace,
 	string Name,
 	string GenericParameters,

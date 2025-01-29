@@ -5,7 +5,7 @@ namespace AutoDeconstruct.Tests;
 internal static class AutoDeconstructGeneratorInstanceTests
 {
 	[Test]
-	public static async Task GenerateWithInternalPropertiesAsync()
+	public static async Task GenerateWithInternalPropertyUsingPublicTypeAsync()
 	{
 		var code =
 			"""
@@ -31,6 +31,90 @@ internal static class AutoDeconstructGeneratorInstanceTests
 				public static partial class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						@namespace = @self.Namespace;
+					}
+				}
+			}
+			
+			""";
+
+		await TestAssistants.RunGeneratorAsync(code,
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[]);
+	}
+
+	[Test]
+	public static async Task GenerateWithInternalPropertyUsingInternalTypeAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			namespace TestSpace
+			{
+				[AutoDeconstruct]
+				public class Test
+				{ 
+					internal InternalType InternalValue { get; set; }
+				}
+
+				internal class InternalType { }
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+			
+			namespace TestSpace
+			{
+				internal static partial class TestExtensions
+				{
+					internal static void Deconstruct(this global::TestSpace.Test @self, out global::TestSpace.InternalType @internalValue)
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						@internalValue = @self.InternalValue;
+					}
+				}
+			}
+			
+			""";
+
+		await TestAssistants.RunGeneratorAsync(code,
+			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[]);
+	}
+
+	[Test]
+	public static async Task GenerateWithInternalTypeAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			namespace TestSpace
+			{
+				[AutoDeconstruct]
+				internal class Test
+				{ 
+					public string? Namespace { get; set; }
+				}
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+			
+			namespace TestSpace
+			{
+				internal static partial class TestExtensions
+				{
+					internal static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
 					{
 						global::System.ArgumentNullException.ThrowIfNull(@self);
 						@namespace = @self.Namespace;

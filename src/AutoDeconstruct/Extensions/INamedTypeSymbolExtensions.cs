@@ -20,7 +20,8 @@ internal static class INamedTypeSymbolExtensions
 				.Where(p => !p.IsIndexer && p.GetMethod is not null &&
 					(p.GetMethod.DeclaredAccessibility == Accessibility.Public ||
 					p.GetMethod.DeclaredAccessibility == Accessibility.Internal))
-				.Select(p => new PropertySymbolModel(p.Name, p.Type.GetFullyQualifiedName())));
+				.Select(p => new PropertySymbolModel(
+					p.Name, p.Type.GetFullyQualifiedName(), p.DeclaredAccessibility, p.Type.DeclaredAccessibility)));
 			targetType = targetType.BaseType;
 		}
 

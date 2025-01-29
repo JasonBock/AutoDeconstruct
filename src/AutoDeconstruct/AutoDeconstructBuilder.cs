@@ -10,6 +10,11 @@ internal static class AutoDeconstructBuilder
 	internal static void Build(IndentedTextWriter writer,
 		TypeSymbolModel type, ImmutableArray<PropertySymbolModel> properties)
 	{
+		var accessibility = type.Accessibility == Accessibility.Internal ||
+			type.AccessibleProperties.Any(_ => 
+				_.Accesibility == Accessibility.Internal && _.TypeAccessibility == Accessibility.Internal) ? 
+			"internal" : "public";
+		
 		if (type.ContainingNamespace is not null)
 		{
 			writer.WriteLines(
@@ -22,7 +27,7 @@ internal static class AutoDeconstructBuilder
 
 		writer.WriteLines(
 			$$"""
-			public static partial class {{type.Name}}Extensions
+			{{accessibility}} static partial class {{type.Name}}Extensions
 			{
 			""");
 		writer.Indent++;
@@ -37,7 +42,7 @@ internal static class AutoDeconstructBuilder
 		var namingContext = new VariableNamingContext(properties.Select(p => p.Name.ToCamelCase()).ToImmutableArray());
 
 		writer.WriteLine(
-			$$"""public static void Deconstruct{{type.GenericParameters}}(this {{type.FullyQualifiedName}} @{{namingContext["self"]}}, {{outParameters}})""");
+			$$"""{{accessibility}} static void Deconstruct{{type.GenericParameters}}(this {{type.FullyQualifiedName}} @{{namingContext["self"]}}, {{outParameters}})""");
 
 		var constraints = type.Constraints;
 

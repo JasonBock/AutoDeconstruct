@@ -31,7 +31,8 @@ internal sealed class AutoDeconstructGenerator
 				return null;
 			}
 
-			return new TypeSymbolModel(type.ContainingNamespace.ToString(), type.Name,
+			return new TypeSymbolModel(type.DeclaredAccessibility,
+				type.ContainingNamespace.ToString(), type.Name,
 				type.GetGenericParameters(), type.GetFullyQualifiedName(),
 				type.GetConstraints(), type.IsValueType, accessibleProperties);
 		}
