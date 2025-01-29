@@ -44,7 +44,7 @@ internal sealed class AutoDeconstructGenerator
 				var types = new List<TypeSymbolModel>();
 
 				var collectedTypes = new CompilationTypesCollector(
-					generatorContext.SemanticModel.Compilation.Assembly, token);
+					generatorContext.SemanticModel.Compilation, token);
 
 				for (var i = 0; i < generatorContext.Attributes.Length; i++)
 				{
