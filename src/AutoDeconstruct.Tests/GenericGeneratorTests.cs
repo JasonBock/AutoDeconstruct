@@ -29,7 +29,7 @@ internal static class GenericGeneratorTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
 					{
@@ -73,7 +73,7 @@ internal static class GenericGeneratorTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct<T>(this global::TestSpace.Test<T> @self, out T @id, out T @value)
 						where T : class
@@ -117,7 +117,7 @@ internal static class GenericGeneratorTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
 					{
@@ -164,7 +164,7 @@ internal static class GenericGeneratorTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct<T1, T2>(this global::TestSpace.Test<T1, T2> @self, out T1 @id, out T2 @value)
 						where T1 : struct, global::TestSpace.IAmForStruct where T2 : unmanaged, global::TestSpace.IAmForStruct

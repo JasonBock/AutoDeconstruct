@@ -28,7 +28,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
 					{
@@ -71,7 +71,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				internal static partial class TestExtensions
+				internal static class TestExtensions
 				{
 					internal static void Deconstruct(this global::TestSpace.Test @self, out global::TestSpace.InternalType @internalValue)
 					{
@@ -112,7 +112,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				internal static partial class TestExtensions
+				internal static class TestExtensions
 				{
 					internal static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
 					{
@@ -153,7 +153,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
 					{
@@ -194,7 +194,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 					{
@@ -237,7 +237,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 					{
@@ -279,7 +279,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 					{
@@ -321,7 +321,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 					{
@@ -362,7 +362,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @id)
 					{
@@ -453,7 +453,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 					{
@@ -531,7 +531,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 					{
@@ -610,7 +610,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out global::System.Guid @id, out int @value)
 					{
@@ -659,7 +659,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class BaseTestExtensions
+				public static class BaseTestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.BaseTest @self, out int @id)
 					{
@@ -670,7 +670,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			}
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @name, out int @id)
 					{
@@ -712,7 +712,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self1, out string? @self)
 					{

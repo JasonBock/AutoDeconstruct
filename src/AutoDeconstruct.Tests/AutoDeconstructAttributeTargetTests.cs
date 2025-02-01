@@ -29,7 +29,7 @@ internal static class AutoDeconstructAttributeTargetTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
 					{
@@ -70,7 +70,7 @@ internal static class AutoDeconstructAttributeTargetTests
 			
 			namespace TestSpace
 			{
-				public static partial class TestExtensions
+				public static class TestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test @self, out string? @namespace)
 					{
@@ -116,7 +116,7 @@ internal static class AutoDeconstructAttributeTargetTests
 			
 			namespace TestSpace
 			{
-				public static partial class NestedTestExtensions
+				public static class NestedTestExtensions
 				{
 					public static void Deconstruct(this global::TestSpace.Test.NestedTest @self, out string? @nestedNamespace)
 					{

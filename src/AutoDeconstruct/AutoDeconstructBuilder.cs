@@ -27,7 +27,7 @@ internal static class AutoDeconstructBuilder
 
 		writer.WriteLines(
 			$$"""
-			{{accessibility}} static partial class {{type.Name}}Extensions
+			{{accessibility}} static class {{type.Name}}Extensions
 			{
 			""");
 		writer.Indent++;
