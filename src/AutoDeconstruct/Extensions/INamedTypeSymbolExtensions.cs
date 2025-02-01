@@ -21,7 +21,8 @@ internal static class INamedTypeSymbolExtensions
 					(p.GetMethod.DeclaredAccessibility == Accessibility.Public ||
 					p.GetMethod.DeclaredAccessibility == Accessibility.Internal))
 				.Select(p => new PropertySymbolModel(
-					p.Name, p.Type.GetFullyQualifiedName(), p.DeclaredAccessibility, p.Type.DeclaredAccessibility)));
+					p.Name, p.Name.ToCamelCase(), p.Type.GetFullyQualifiedName(), 
+					p.DeclaredAccessibility, p.Type.DeclaredAccessibility)));
 			targetType = targetType.BaseType;
 		}
 

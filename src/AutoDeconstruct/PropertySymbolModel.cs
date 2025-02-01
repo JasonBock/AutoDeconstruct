@@ -2,5 +2,9 @@
 
 namespace AutoDeconstruct;
 
-internal record PropertySymbolModel(string Name, string TypeFullyQualifiedName,
-	Accessibility Accesibility, Accessibility TypeAccessibility);
+internal sealed record PropertySymbolModel(
+	string Name,
+	string CamelCaseName,
+	string TypeFullyQualifiedName,
+	Accessibility Accesibility, 
+	Accessibility TypeAccessibility);

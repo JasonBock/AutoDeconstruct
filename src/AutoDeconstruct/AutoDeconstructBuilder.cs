@@ -32,14 +32,12 @@ internal static class AutoDeconstructBuilder
 			""");
 		writer.Indent++;
 
-		// TODO: I'd like to not call ToCamelCase() three different times,
-		// so this may be a spot to optimize.
 		var outParameters = string.Join(", ", properties.Select(p =>
 		{
-			return $"out {p.TypeFullyQualifiedName} @{p.Name.ToCamelCase()}";
+			return $"out {p.TypeFullyQualifiedName} @{p.CamelCaseName}";
 		}));
 
-		var namingContext = new VariableNamingContext(properties.Select(p => p.Name.ToCamelCase()).ToImmutableArray());
+		var namingContext = new VariableNamingContext(properties.Select(p => p.CamelCaseName).ToImmutableArray());
 
 		writer.WriteLine(
 			$$"""{{accessibility}} static void Deconstruct{{type.GenericParameters}}(this {{type.FullyQualifiedName}} @{{namingContext["self"]}}, {{outParameters}})""");
@@ -63,7 +61,7 @@ internal static class AutoDeconstructBuilder
 
 		if (properties.Length == 1)
 		{
-			writer.WriteLine($"@{properties[0].Name.ToCamelCase()} = @{namingContext["self"]}.{properties[0].Name};");
+			writer.WriteLine($"@{properties[0].CamelCaseName} = @{namingContext["self"]}.{properties[0].Name};");
 		}
 		else
 		{
