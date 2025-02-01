@@ -6,6 +6,7 @@ internal sealed record TypeSymbolModel(
 	Accessibility Accessibility,
 	string? ContainingNamespace,
 	string Name,
+	string ExtensionsName,
 	string GenericParameters,
 	string FullyQualifiedName,
 	string Constraints,

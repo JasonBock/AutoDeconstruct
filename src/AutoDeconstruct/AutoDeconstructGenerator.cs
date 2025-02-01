@@ -13,7 +13,8 @@ internal sealed class AutoDeconstructGenerator
 {
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		static TypeSymbolModel? GetModel(INamedTypeSymbol type, bool isAttributeAtAssemblyLevel)
+		static TypeSymbolModel? GetModel(Compilation compilation,
+			INamedTypeSymbol type, bool isAttributeAtAssemblyLevel)
 		{
 			if (isAttributeAtAssemblyLevel && 
 				type.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == "AutoDeconstruct.NoAutoDeconstructAttribute"))
@@ -32,8 +33,34 @@ internal sealed class AutoDeconstructGenerator
 				return null;
 			}
 
+			var containingNamespace = type.ContainingNamespace is not null ?
+				!type.ContainingNamespace.IsGlobalNamespace ?
+					type.ContainingNamespace.ToDisplayString() :
+					null :
+				null;
+
+			// Create the unique name for the extension type.
+			var extensionName = $"{type.Name}Extensions";
+			var extensionFQN = containingNamespace is null ?
+				 $"{extensionName}" :
+				 $"{containingNamespace}.{extensionName}";
+			var existingType = compilation.GetTypeByMetadataName(extensionFQN);
+
+			int? id = null;
+
+			while (existingType is not null)
+			{
+				id = id is null ? 2 : id++;
+				extensionName = $"{type.Name}Extensions{id}";
+				extensionFQN = containingNamespace is null ?
+					$"{extensionName}Extensions" :
+					$"{containingNamespace}.{extensionName}Extensions";
+				existingType = compilation.GetTypeByMetadataName(extensionFQN);
+			}
+
 			return new TypeSymbolModel(type.DeclaredAccessibility,
-				type.ContainingNamespace.ToString(), type.Name,
+				containingNamespace, type.Name,
+				extensionName,
 				type.GetGenericParameters(), type.GetFullyQualifiedName(),
 				type.GetConstraints(), type.IsValueType, accessibleProperties);
 		}
@@ -44,8 +71,9 @@ internal sealed class AutoDeconstructGenerator
 			{
 				var types = new List<TypeSymbolModel>();
 
+				var compilation = generatorContext.SemanticModel.Compilation;
 				var collectedTypes = new CompilationTypesCollector(
-					generatorContext.SemanticModel.Compilation.Assembly, token);
+					compilation.Assembly, token);
 
 				for (var i = 0; i < generatorContext.Attributes.Length; i++)
 				{
@@ -56,7 +84,7 @@ internal sealed class AutoDeconstructGenerator
 					{
 						foreach (var assemblyType in collectedTypes.Types)
 						{
-							var typeModel = GetModel(assemblyType, true);
+							var typeModel = GetModel(compilation, assemblyType, true);
 
 							if (typeModel is not null)
 							{
@@ -68,7 +96,7 @@ internal sealed class AutoDeconstructGenerator
 					{
 						if (!collectedTypes.ExcludedTypes.Contains(typeSymbol))
 						{
-							var typeModel = GetModel(typeSymbol, false);
+							var typeModel = GetModel(compilation, typeSymbol, false);
 
 							if (typeModel is not null)
 							{
