@@ -11,6 +11,8 @@ internal static class StringExtensions
 	// just wasn't working, and the implementation is pretty small
 	// so I basically copied it here.
 	// Giving credit where credit is due.
+	// Note that we can't use [GeneratedRegex] here, because that's
+	// .NET 7+, and we can't access that in NS 2.0.
 	internal static string ToCamelCase(this string self)
 	{
 		var word = Regex.Replace(self, "(?:^|_| +)(.)", match => match.Groups[1].Value.ToUpper(CultureInfo.CurrentCulture));

@@ -13,9 +13,10 @@ internal sealed class AutoDeconstructGenerator
 {
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		static TypeSymbolModel? GetModel(INamedTypeSymbol type)
+		static TypeSymbolModel? GetModel(INamedTypeSymbol type, bool isAttributeAtAssemblyLevel)
 		{
-			if (type.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == "AutoDeconstruct.NoAutoDeconstructAttribute"))
+			if (isAttributeAtAssemblyLevel && 
+				type.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == "AutoDeconstruct.NoAutoDeconstructAttribute"))
 			{
 				return null;
 			}
@@ -55,7 +56,7 @@ internal sealed class AutoDeconstructGenerator
 					{
 						foreach (var assemblyType in collectedTypes.Types)
 						{
-							var typeModel = GetModel(assemblyType);
+							var typeModel = GetModel(assemblyType, true);
 
 							if (typeModel is not null)
 							{
@@ -67,7 +68,7 @@ internal sealed class AutoDeconstructGenerator
 					{
 						if (!collectedTypes.ExcludedTypes.Contains(typeSymbol))
 						{
-							var typeModel = GetModel(typeSymbol);
+							var typeModel = GetModel(typeSymbol, false);
 
 							if (typeModel is not null)
 							{
