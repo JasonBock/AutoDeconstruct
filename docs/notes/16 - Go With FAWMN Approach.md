@@ -5,10 +5,10 @@
 * DONE - In `CompilationTypesCollector`, does `GetMembers()` also get nested types?
 * DONE - Optimize calling `ToCamelCase()`
 * DONE - In `StringExtensions.ToCamelCase()`, use a source generator for the regex...maybe?
-* Make an analyzer to yell at the developer if `[AutoDeconstruct]` and `[NoAutoDeconstruct]` exist on the same type.
-* Consider making the generated extension method part of the type declaration if the type is `partial`. See this for details: https://stackoverflow.com/questions/68906372/roslyn-analyzer-is-class-marked-as-partial
+* DONE - Put a test in to show that a `Deconstruct()` is made even if both attributes exist on the type.
+* DONE - Consider making the generated extension method part of the type declaration if the type is `partial`. See this for details: https://stackoverflow.com/questions/68906372/roslyn-analyzer-is-class-marked-as-partial
+* DONE - Add code to change the name of extension type if there is a collision
 * Add a flag to `[AutoDeconstruct]` to only do a full assembly search of extension method, something like `[AutoDeconstruct(SearchForExtensionMethods.Yes)]`. It would be `SearchForExtensionMethods.No` by default, you need to opt-in to do the search. Most of the time, the search is unnecessary.
-* Create an integration test project for the assembly-level `[AutoDeconstruct]` version with `[NoAutoDeconstruct]`
 
 
 Also...https://discord.com/channels/143867839282020352/598678594750775301/1068691525615239168

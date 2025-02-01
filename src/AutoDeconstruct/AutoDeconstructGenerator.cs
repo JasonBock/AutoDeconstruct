@@ -26,8 +26,8 @@ internal sealed class AutoDeconstructGenerator
 			if (accessibleProperties.IsEmpty ||
 				type.GetMembers().OfType<IMethodSymbol>().Any(
 					m => m.Name == Shared.DeconstructName &&
-					!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
-					m.Parameters.All(p => p.RefKind == RefKind.Out)))
+						!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
+						m.Parameters.All(p => p.RefKind == RefKind.Out)))
 			{
 				// There is an existing instance deconstruct.
 				return null;
@@ -72,16 +72,18 @@ internal sealed class AutoDeconstructGenerator
 				var types = new List<TypeSymbolModel>();
 
 				var compilation = generatorContext.SemanticModel.Compilation;
-				var collectedTypes = new CompilationTypesCollector(
-					compilation.Assembly, token);
 
 				for (var i = 0; i < generatorContext.Attributes.Length; i++)
 				{
 					// Is the attribute on the assembly, or a type?
 					var attributeClass = generatorContext.Attributes[i];
+					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
 
 					if (generatorContext.TargetSymbol is IAssemblySymbol assemblySymbol)
 					{
+						var collectedTypes = new AssemblyTypesCollectorVisitor(
+							compilation.Assembly, search, token);
+
 						foreach (var assemblyType in collectedTypes.Types)
 						{
 							var typeModel = GetModel(compilation, assemblyType, true);
@@ -94,7 +96,8 @@ internal sealed class AutoDeconstructGenerator
 					}
 					else if (generatorContext.TargetSymbol is INamedTypeSymbol typeSymbol)
 					{
-						if (!collectedTypes.ExcludedTypes.Contains(typeSymbol))
+						if (search == SearchForExtensionMethods.No ||
+							!new IsTypeExcludedVisitor(compilation.Assembly, typeSymbol, token).IsExcluded)
 						{
 							var typeModel = GetModel(compilation, typeSymbol, false);
 

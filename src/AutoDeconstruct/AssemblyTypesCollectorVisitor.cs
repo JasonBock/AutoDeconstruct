@@ -1,21 +1,23 @@
 ﻿using AutoDeconstruct.Extensions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Operations;
 using System.Collections.Immutable;
 
 namespace AutoDeconstruct;
 
 // Lifted/inspired from:
 // https://stackoverflow.com/questions/64623689/get-all-types-from-compilation-using-roslyn
-internal sealed class CompilationTypesCollector
+internal sealed class AssemblyTypesCollectorVisitor
 	: SymbolVisitor
 {
 	private readonly CancellationToken cancellationToken;
 	private readonly HashSet<INamedTypeSymbol> types = [];
 	private readonly HashSet<INamedTypeSymbol> excludedTypes = [];
+	private readonly SearchForExtensionMethods search;
 
-	public CompilationTypesCollector(IAssemblySymbol assembly, CancellationToken cancellation)
+	public AssemblyTypesCollectorVisitor(IAssemblySymbol assembly, SearchForExtensionMethods search,
+		CancellationToken cancellation)
 	{
+		this.search = search;
 		this.cancellationToken = cancellation;
 		this.types = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 		this.VisitAssembly(assembly);
@@ -48,10 +50,19 @@ internal sealed class CompilationTypesCollector
 
 		if (this.types.Add(type))
 		{
-			foreach (var typeMember in type.GetMembers())
+			foreach (var typeMember in type.GetTypeMembers())
 			{
 				this.cancellationToken.ThrowIfCancellationRequested();
 				typeMember.Accept(this);
+			}
+
+			if (this.search == SearchForExtensionMethods.Yes)
+			{
+				foreach (var typeMember in type.GetMembers("Deconstruct").OfType<IMethodSymbol>())
+				{
+					this.cancellationToken.ThrowIfCancellationRequested();
+					typeMember.Accept(this);
+				}
 			}
 		}
 	}

@@ -47,6 +47,36 @@ internal static class AutoDeconstructAttributeTargetTests
 	}
 
 	[Test]
+	public static async Task GenerateAtAssemblyLevelAndSearchIsRequestedAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			[assembly: AutoDeconstruct(SearchForExtensionMethods.Yes)]
+			
+			namespace TestSpace
+			{
+				public class Test
+				{ 
+					public string? Namespace { get; set; }
+				}
+				
+				public static class MyTestExtensions
+				{
+					public static void Deconstruct(this Test self, out string? @namespace) =>
+						@namespace = "3";
+				}
+			}
+			""";
+
+		await TestAssistants.RunGeneratorAsync(code,
+			[],
+			[]);
+	}
+
+	[Test]
 	public static async Task GenerateAtTypeLevelAsync()
 	{
 		var code =
