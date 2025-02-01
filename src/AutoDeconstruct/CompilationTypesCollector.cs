@@ -13,14 +13,12 @@ internal sealed class CompilationTypesCollector
 	private readonly CancellationToken cancellationToken;
 	private readonly HashSet<INamedTypeSymbol> types = [];
 	private readonly HashSet<INamedTypeSymbol> excludedTypes = [];
-	private readonly Compilation compilation;
 
-	public CompilationTypesCollector(Compilation compilation, CancellationToken cancellation)
+	public CompilationTypesCollector(IAssemblySymbol assembly, CancellationToken cancellation)
 	{
-		this.compilation = compilation;
 		this.cancellationToken = cancellation;
 		this.types = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
-		this.VisitAssembly(compilation.Assembly);
+		this.VisitAssembly(assembly);
 
 		this.types.RemoveWhere(_ => this.excludedTypes.Contains(_));
 
@@ -55,18 +53,6 @@ internal sealed class CompilationTypesCollector
 				this.cancellationToken.ThrowIfCancellationRequested();
 				typeMember.Accept(this);
 			}
-
-			// TODO: Does GetMembers() also get nested types?
-			//var nestedTypes = type.GetTypeMembers();
-
-			//if (!nestedTypes.IsDefaultOrEmpty)
-			//{
-			//	foreach (var nestedType in nestedTypes)
-			//	{
-			//		this.cancellationToken.ThrowIfCancellationRequested();
-			//		nestedType.Accept(this);
-			//	}
-			//}
 		}
 	}
 
@@ -80,27 +66,15 @@ internal sealed class CompilationTypesCollector
 		{
 			if (symbol.Parameters[0].Type is INamedTypeSymbol parameterType)
 			{
-				var accessibleProperties = parameterType.GetAccessiblePropertySymbols();
+				var accessibleProperties = parameterType.GetAccessibleProperties();
 
 				if (accessibleProperties.Length == symbol.Parameters.Length - 1)
 				{
-					var extensionParameters = symbol.Parameters.Slice(1, symbol.Parameters.Length - 1);
-
-					foreach (var accessibleProperty in accessibleProperties)
-					{
-						var parameter = extensionParameters.SingleOrDefault(
-							_ => this.compilation.ClassifyCommonConversion(accessibleProperty.Type, _.Type).IsImplicit);
-
-						if (parameter is not null)
-						{
-							extensionParameters = extensionParameters.Remove(parameter);
-						}
-					}
-
-					if (extensionParameters.Length == 0)
-					{
-						this.excludedTypes.Add(parameterType);
-					}
+					// Note: Deconstruct methods cannot be overloaded if they have
+					// the same number of out parameters, so if we find one
+					// that has the same number of parameters as accessible properties,
+					// that's enough to make it an excluded type target.
+					this.excludedTypes.Add(parameterType);
 				}
 			}
 		}

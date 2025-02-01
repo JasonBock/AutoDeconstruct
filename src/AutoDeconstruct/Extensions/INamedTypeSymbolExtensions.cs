@@ -28,23 +28,6 @@ internal static class INamedTypeSymbolExtensions
 		return accessiblePropertiesBuilder.ToImmutable();
 	}
 
-	internal static ImmutableArray<IPropertySymbol> GetAccessiblePropertySymbols(this INamedTypeSymbol self)
-	{
-		var targetType = self;
-		var accessiblePropertiesBuilder = ImmutableArray.CreateBuilder<IPropertySymbol>();
-
-		while (targetType is not null)
-		{
-			accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
-				.Where(p => !p.IsIndexer && p.GetMethod is not null &&
-					(p.GetMethod.DeclaredAccessibility == Accessibility.Public ||
-					p.GetMethod.DeclaredAccessibility == Accessibility.Internal)));
-			targetType = targetType.BaseType;
-		}
-
-		return accessiblePropertiesBuilder.ToImmutable();
-	}
-
 	internal static string GetConstraints(this INamedTypeSymbol self)
 	{
 		if (self.TypeParameters.Length == 0)

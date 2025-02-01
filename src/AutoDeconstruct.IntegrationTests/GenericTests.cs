@@ -19,7 +19,7 @@ internal static class GenericTests
 }
 
 [AutoDeconstruct]
-internal class GenericThings<T1, T2>
+internal sealed class GenericThings<T1, T2>
 {
 	internal required T1 Thing1 { get; set; }
 	internal required T2 Thing2 { get; set; }

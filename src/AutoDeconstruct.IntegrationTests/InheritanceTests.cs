@@ -33,7 +33,7 @@ internal class BaseInheritance
 }
 
 [AutoDeconstruct]
-internal class DerivedInheritance
+internal sealed class DerivedInheritance
 	: BaseInheritance
 {
 	internal string? Data { get; set; }
