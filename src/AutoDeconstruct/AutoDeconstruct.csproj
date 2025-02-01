@@ -8,7 +8,6 @@
 		<EnforceExtendedAnalyzerRules>false</EnforceExtendedAnalyzerRules>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeSymbols>true</IncludeSymbols>
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageId>AutoDeconstruct</PackageId>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
