@@ -22,7 +22,7 @@ var person = new Person { Age = 22, Name = "Joe" };
 var (age, name) = person;
 ```
 
-Read [the overview document](docs/Overview.md) for further details.
+Read [the overview document](https://github.com/JasonBock/AutoDeconstruct/blob/main/docs/Overview.md) for further details.
 
 ### Prerequisites
 
