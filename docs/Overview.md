@@ -3,8 +3,7 @@
 - [What is a Deconstructor?](#what-is-a-deconstructor)
 - [AutoDeconstruct Features](#autodeconstruct-features)
 	- [Marking Types](#marking-types)
-	- [Assembly-Level Support](#assembly-level-support)
-	- [Ignore Deconstruction Creation](#ignore-deconstruction-creation)
+	- [Extension Method Searching](#extension-method-searching)
 
 ## Motivation
 
@@ -19,14 +18,14 @@ using System;
 
 public sealed class Customer
 {
-	public Customer(Guid id, string name) =>
-		(this.Id, this.Name) = (id, name);
+  public Customer(Guid id, string name) =>
+    (this.Id, this.Name) = (id, name);
 
-	public void Deconstruct(out Guid id, out string name) =>
-		(id, name) = (this.Id, this.Name);
+  public void Deconstruct(out Guid id, out string name) =>
+    (id, name) = (this.Id, this.Name);
 
-	public Guid Id { get; }
-	public string Name { get; }
+  public Guid Id { get; }
+  public string Name { get; }
 }
 
 var customer = new Customer(Guid.NewGuid(), "Jason");
@@ -34,17 +33,17 @@ var (id, name) = customer;
 
 public struct Point
 {
-	public Point(int x, int y) =>
-		(this.X, this.Y) = (x, y);
+  public Point(int x, int y) =>
+    (this.X, this.Y) = (x, y);
 		
-	public int X { get; }
-	public int Y { get; }
+  public int X { get; }
+  public int Y { get; }
 }
 
 public static class PointExtensions
 {
-	public static void Deconstruct(this Point self, out int x, out int y) =>
-		(x, y) = (self.X, self.Y);
+  public static void Deconstruct(this Point self, out int x, out int y) =>
+    (x, y) = (self.X, self.Y);
 }
 
 var point = new Point(2, 3);
@@ -64,11 +63,11 @@ namespace Maths.Geometry;
 [AutoDeconstruct]
 public struct Point
 {
-	public Point(int x, int y) =>
-		(this.X, this.Y) = (x, y);
-		
-	public int X { get; }
-	public int Y { get; }
+  public Point(int x, int y) =>
+    (this.X, this.Y) = (x, y);
+
+  public int X { get; }
+  public int Y { get; }
 }
 ```
 
@@ -79,11 +78,11 @@ Then the library generates this:
 
 namespace Maths.Geometry
 {
-	public static partial class PointExtensions
-	{
-		public static void Deconstruct(this global::Maths.Geometry.Point @self, out int @x, out int @y) =>
-			(@x, @y) = (@self.X, @self.Y);
-	}
+  public static partial class PointExtensions
+  {
+    public static void Deconstruct(this global::Maths.Geometry.Point @self, out int @x, out int @y) =>
+      (@x, @y) = (@self.X, @self.Y);
+  }
 }
 ```
 
@@ -97,12 +96,12 @@ namespace Models;
 [AutoDeconstruct]
 public sealed class Person
 {
-	public uint Age { get; init; }
-	public Guid Id { get; init; }
-	public string Name { get; init; }
+  public uint Age { get; init; }
+  public Guid Id { get; init; }
+  public string Name { get; init; }
 
-	public void Deconstruct(out Guid id) =>
-		id = this.Id;
+  public void Deconstruct(out Guid id) =>
+    id = this.Id;
 }
 ```
 
@@ -113,93 +112,42 @@ AutoDeconstruct would see that there are three properties that could be used for
 
 namespace Models
 {
-	public static partial class PersonExtensions
-	{
-		public static void Deconstruct(this global::Models.Person @self, out global::System.Guid @id, out string @name, out uint @age)
-		{
-			global::System.ArgumentNullException.ThrowIfNull(@self);
-			(@id, @name, @age) = (@self.Id, @self.Name, @self.Age);
-		}
-	}
+  public static partial class PersonExtensions
+  {
+    public static void Deconstruct(this global::Models.Person @self, out global::System.Guid @id, out string @name, out uint @age)
+    {
+      global::System.ArgumentNullException.ThrowIfNull(@self);
+        (@id, @name, @age) = (@self.Id, @self.Name, @self.Age);
+    }
+  }
 }
 ```
 
-### Assembly-Level Support
+### Extension Method Searching
 
-`[AutoDeconstruct]` can also be defined at the assembly level to inform AutoDeconstruct to add `Deconstruct()` extension methods for **every** type in the assembly:
+While AutoDeconstruct will search the target type to see if an existing `Deconstruct()` method exists that matches what AutoDeconstruct would do, a user may want to opt int to a search to look through the entire assembly for `Deconstruct()` extension methods. By default, this is turned off as it's not common to create deconstruction methods this way and it's potentially computationally expensive, but if this completeness is desired, `SearchForExtensionMethods.Yes` can be passed into `[AutoDeconstruct]`:
 
 ```csharp
 using AutoDeconstruct;
 
-[assembly: AutoDeconstruct]
-
 namespace Models;
 
+[AutoDeconstruct(SearchForExtensionMethods.Yes)]
 public sealed class Person
 {
-	public uint Age { get; init; }
-	public Guid Id { get; init; }
-	public string Name { get; init; }
+  public uint Age { get; init; }
+  public Guid Id { get; init; }
+  public string Name { get; init; }
 
-	public void Deconstruct(out Guid id) =>
-		id = this.Id;
-}
-```
-
-While AutoDeconstruct will search the target type to see if an existing `Deconstruct()` method exists that matches what AutoDeconstruct would do, a user may want to opt int to a search to look through the entire assembly for `Deconstruct()` extension methods. By default, this is turned off as it's not common to create deconstruction methods this way, but if this completeness is desired, `SearchForExtensionMethods.Yes` can be passed into `[AutoDeconstruct]`:
-
-```csharp
-using AutoDeconstruct;
-
-[assembly: AutoDeconstruct(SearchForExtensionMethods.Yes)]
-
-namespace Models;
-
-public sealed class Person
-{
-	public uint Age { get; init; }
-	public Guid Id { get; init; }
-	public string Name { get; init; }
-
-	public void Deconstruct(out Guid id) =>
-		id = this.Id;
+  public void Deconstruct(out Guid id) =>
+    id = this.Id;
 }
 
 public static partial class PersonExtensions
 {
-	public static void Deconstruct(this Person @self, out Guid @id, out string @name, out uint @age) =>
-		(@id, @name, @age) = (@self.Id, @self.Name, @self.Age);
+  public static void Deconstruct(this Person @self, out Guid @id, out string @name, out uint @age) =>
+    (@id, @name, @age) = (@self.Id, @self.Name, @self.Age);
 }
 ```
 
-In this case, AutoDeconstruct will detect an existing `Deconstruct()` method that already does what AutoDeconstruct would generate, so no code is generated. This search flag also works when `[AutoDeconstruct]` is defined on a specific type.
-
-### Ignore Deconstruction Creation
-
-The `[NoAutoDeconstruct]` attribute can be added to a type will tell AutoDeconstrct to ignore it. Note that this is only relevant when `[AutoDeconstruct]` is added at the assembly level:
-
-```csharp
-namespace AutoDeconstruct;
-namespace Models;
-
-[assembly: AutoDeconstruct]
-
-[NoAutoDeconstruct]
-public sealed class Person
-{
-	public uint Age { get; init; }
-	public Guid Id { get; init; }
-	public string Name { get; init; }
-}
-
-public struct Point
-{
-	public Point(int x, int y) =>
-		(this.X, this.Y) = (x, y);
-		
-	public int X { get; }
-	public int Y { get; }
-}
-```
-
-In this case, AutoDeconstruct will not generate a `Deconstruct` method for `Person`, but it will for `Point`. If a type has `[AutoDeconstruct]` and `[NoAutoDeconstruct]`, `[AutoDeconstruct]` "wins".
+In this case, AutoDeconstruct will detect an existing `Deconstruct()` method that already does what AutoDeconstruct would generate, so no code is generated.
