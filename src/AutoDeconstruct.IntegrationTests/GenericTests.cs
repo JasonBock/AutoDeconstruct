@@ -10,11 +10,11 @@ internal static class GenericTests
 		var thing = new GenericThings<int, string> { Thing1 = 1, Thing2 = "2" };
 		(var newThing1, var newThing2) = thing;
 
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			Assert.That(newThing1, Is.EqualTo(1));
 			Assert.That(newThing2, Is.EqualTo("2"));
-		});
+		}
 	}
 }
 

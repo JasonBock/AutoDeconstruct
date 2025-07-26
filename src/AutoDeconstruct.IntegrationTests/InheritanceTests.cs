@@ -18,11 +18,11 @@ internal static class InheritanceTests
 
 		var (newData, newId) = target;
 
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			Assert.That(newData, Is.EqualTo(target.Data));
 			Assert.That(newId, Is.EqualTo(target.Id));
-		});
+		}
 	}
 }
 

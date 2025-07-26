@@ -79,22 +79,7 @@ internal sealed class AutoDeconstructGenerator
 					var attributeClass = generatorContext.Attributes[i];
 					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
 
-					if (generatorContext.TargetSymbol is IAssemblySymbol assemblySymbol)
-					{
-						var collectedTypes = new AssemblyTypesCollectorVisitor(
-							compilation.Assembly, search, token);
-
-						foreach (var assemblyType in collectedTypes.Types)
-						{
-							var typeModel = GetModel(compilation, assemblyType, true);
-
-							if (typeModel is not null)
-							{
-								types.Add(typeModel);
-							}
-						}
-					}
-					else if (generatorContext.TargetSymbol is INamedTypeSymbol typeSymbol)
+					if (generatorContext.TargetSymbol is INamedTypeSymbol typeSymbol)
 					{
 						if (search == SearchForExtensionMethods.No ||
 							!new IsTypeExcludedVisitor(compilation.Assembly, typeSymbol, token).IsExcluded)

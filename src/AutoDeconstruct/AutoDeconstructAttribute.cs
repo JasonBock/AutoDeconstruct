@@ -3,7 +3,7 @@
 /// <summary>
 /// Instructs AutoDeconstruct to generate a <c>Deconstruct()</c> implementation.
 /// </summary>
-[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface,
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface,
 	AllowMultiple = false, Inherited = false)]
 public sealed class AutoDeconstructAttribute
 	: Attribute
@@ -12,7 +12,7 @@ public sealed class AutoDeconstructAttribute
 	/// Creates a new <see cref="AutoDeconstructAttribute"/> instance.
 	/// </summary>
 	/// <param name="search">
-	/// Specifies if AutoDeconstruct should search for exisiting <c>Deconstruct()</c> extension methods. 
+	/// Specifies if AutoDeconstruct should search for existing <c>Deconstruct()</c> extension methods. 
 	/// The default is <see cref="SearchForExtensionMethods.No"/>.
 	/// </param>
 	public AutoDeconstructAttribute(SearchForExtensionMethods search = SearchForExtensionMethods.No) =>

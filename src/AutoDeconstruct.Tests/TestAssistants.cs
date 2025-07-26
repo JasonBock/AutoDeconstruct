@@ -45,7 +45,7 @@ internal static class TestAssistants
 			 "net9.0",
 			 new PackageIdentity(
 				  "Microsoft.NETCore.App.Ref",
-				  "9.0.1"),
+				  "9.0.7"),
 			 Path.Combine("ref", "net9.0"));
 	}
 }

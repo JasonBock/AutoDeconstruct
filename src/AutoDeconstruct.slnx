@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../changelog.md" />
+    <File Path="../LICENSE" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="AutoDeconstruct.IntegrationTests/AutoDeconstruct.IntegrationTests.csproj" />
+  <Project Path="AutoDeconstruct.Tests/AutoDeconstruct.Tests.csproj" />
+  <Project Path="AutoDeconstruct/AutoDeconstruct.csproj" />
+</Solution>

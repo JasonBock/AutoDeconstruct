@@ -20,12 +20,12 @@ internal static class DeconstructExistsWithNoMatchTests
 
 		var (newData, newId, newValue) = target;
 
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			Assert.That(newData, Is.EqualTo(data));
 			Assert.That(newId, Is.EqualTo(id));
 			Assert.That(newValue, Is.EqualTo(value));
-		});
+		}
 	}
 }
 
