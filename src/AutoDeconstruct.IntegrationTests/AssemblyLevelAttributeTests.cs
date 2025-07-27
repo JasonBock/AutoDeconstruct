@@ -2,7 +2,7 @@
 using AutoDeconstruct.IntegrationTests;
 using NUnit.Framework;
 
-[assembly: AutoDeconstruct(targetType: typeof(Customer))]
+[assembly: AutoDeconstruct(targetType: typeof(AssemblyLevelCustomer))]
 
 namespace AutoDeconstruct.IntegrationTests;
 
@@ -14,7 +14,7 @@ internal static class AssemblyLevelAttributeTests
 		var name = "Joe";
 		var id = Guid.NewGuid();
 
-		var target = new Customer
+		var target = new AssemblyLevelCustomer
 		{
 			Name = name,
 			Id = id
@@ -30,7 +30,7 @@ internal static class AssemblyLevelAttributeTests
 	}
 }
 
-internal sealed class Customer
+internal sealed class AssemblyLevelCustomer
 {
 	public required string? Name { get; set; }
 	public Guid Id { get; set; }
