@@ -163,7 +163,7 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 			{
 				public class NotATest { }
 
-				[AutoDeconstruct(SearchForExtensionMethods.Yes)]
+				[AutoDeconstruct(search: SearchForExtensionMethods.Yes)]
 				public class Test
 				{ 
 					public string? Id { get; set; }
@@ -192,7 +192,7 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 
 			namespace TestSpace
 			{
-				[AutoDeconstruct(SearchForExtensionMethods.Yes)]
+				[AutoDeconstruct(search: SearchForExtensionMethods.Yes)]
 				public class Test
 				{ 
 					public DerivedType Id { get; set; }

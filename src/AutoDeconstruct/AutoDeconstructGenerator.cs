@@ -13,58 +13,6 @@ internal sealed class AutoDeconstructGenerator
 {
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		static TypeSymbolModel? GetModel(Compilation compilation,
-			INamedTypeSymbol type, bool isAttributeAtAssemblyLevel)
-		{
-			if (isAttributeAtAssemblyLevel && 
-				type.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == "AutoDeconstruct.NoAutoDeconstructAttribute"))
-			{
-				return null;
-			}
-
-			var accessibleProperties = type.GetAccessibleProperties();
-			if (accessibleProperties.IsEmpty ||
-				type.GetMembers().OfType<IMethodSymbol>().Any(
-					m => m.Name == Shared.DeconstructName &&
-						!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
-						m.Parameters.All(p => p.RefKind == RefKind.Out)))
-			{
-				// There is an existing instance deconstruct.
-				return null;
-			}
-
-			var containingNamespace = type.ContainingNamespace is not null ?
-				!type.ContainingNamespace.IsGlobalNamespace ?
-					type.ContainingNamespace.ToDisplayString() :
-					null :
-				null;
-
-			// Create the unique name for the extension type.
-			var extensionName = $"{type.Name}Extensions";
-			var extensionFQN = containingNamespace is null ?
-				 $"{extensionName}" :
-				 $"{containingNamespace}.{extensionName}";
-			var existingType = compilation.GetTypeByMetadataName(extensionFQN);
-
-			int? id = null;
-
-			while (existingType is not null)
-			{
-				id = id is null ? 2 : id++;
-				extensionName = $"{type.Name}Extensions{id}";
-				extensionFQN = containingNamespace is null ?
-					$"{extensionName}Extensions" :
-					$"{containingNamespace}.{extensionName}Extensions";
-				existingType = compilation.GetTypeByMetadataName(extensionFQN);
-			}
-
-			return new TypeSymbolModel(type.DeclaredAccessibility,
-				containingNamespace, type.Name,
-				extensionName,
-				type.GetGenericParameters(), type.GetFullyQualifiedName(),
-				type.GetConstraints(), type.IsValueType, accessibleProperties);
-		}
-
 		var types = context.SyntaxProvider.ForAttributeWithMetadataName(
 			"AutoDeconstruct.AutoDeconstructAttribute", (_, _) => true,
 			(generatorContext, token) =>
@@ -77,14 +25,19 @@ internal sealed class AutoDeconstructGenerator
 				{
 					// Is the attribute on the assembly, or a type?
 					var attributeClass = generatorContext.Attributes[i];
-					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
 
-					if (generatorContext.TargetSymbol is INamedTypeSymbol typeSymbol)
+					var targetType = generatorContext.TargetSymbol is IAssemblySymbol ?
+						(attributeClass.ConstructorArguments[0].Value as INamedTypeSymbol) :
+						generatorContext.TargetSymbol as INamedTypeSymbol;
+
+					if (targetType is not null)
 					{
+						var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[1].Value!;
+
 						if (search == SearchForExtensionMethods.No ||
-							!new IsTypeExcludedVisitor(compilation.Assembly, typeSymbol, token).IsExcluded)
+							!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
 						{
-							var typeModel = GetModel(compilation, typeSymbol, false);
+							var typeModel = TypeSymbolModel.GetModel(compilation, targetType);
 
 							if (typeModel is not null)
 							{
@@ -97,7 +50,6 @@ internal sealed class AutoDeconstructGenerator
 				return types;
 			})
 			.SelectMany((names, _) => names);
-
 
 		context.RegisterSourceOutput(types.Collect(),
 			(context, source) => CreateOutput(source, context));
