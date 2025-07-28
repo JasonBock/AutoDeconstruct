@@ -20,7 +20,7 @@ internal static class AssemblyLevelAttributeTests
 			Id = id
 		};
 
-		var (newName, newId) = target;
+		var (newId, newName) = target;
 
 		using (Assert.EnterMultipleScope())
 		{

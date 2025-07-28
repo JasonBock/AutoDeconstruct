@@ -12,7 +12,7 @@ internal static class INamedTypeSymbolExtensions
 	internal static EquatableArray<PropertySymbolModel> GetAccessibleProperties(this INamedTypeSymbol self)
 	{
 		var targetType = self;
-		var accessiblePropertiesBuilder = ImmutableArray.CreateBuilder<PropertySymbolModel>();
+		var accessiblePropertiesBuilder = new List<PropertySymbolModel>();
 
 		while (targetType is not null)
 		{
@@ -26,7 +26,7 @@ internal static class INamedTypeSymbolExtensions
 			targetType = targetType.BaseType;
 		}
 
-		return accessiblePropertiesBuilder.ToImmutable();
+		return accessiblePropertiesBuilder.OrderBy(_ => _.Name).ToImmutableArray();
 	}
 
 	internal static string GetConstraints(this INamedTypeSymbol self)
