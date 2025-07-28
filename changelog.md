@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Removed the ability to add deconstruction to every time in an assembly (issue [#18](https://github.com/JasonBock/AutoDeconstruct/issues/18))
+- `Deconstruct()` parameters are now sorted by property name (issue [#23](https://github.com/JasonBock/AutoDeconstruct/issues/23))
 
 ## [1.1.0] - 2025.02.01
 
