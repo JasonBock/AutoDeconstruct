@@ -40,9 +40,8 @@ internal sealed class AutoDeconstructGenerator
 					}
 				}
 
-				return types;
-			})
-			.SelectMany((names, _) => names);
+				return new EquatableArray<TypeSymbolModel>([.. types]);
+			});
 
 		var assemblyTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
 			"AutoDeconstruct.TargetAutoDeconstructAttribute", (_, _) => true,
@@ -71,18 +70,17 @@ internal sealed class AutoDeconstructGenerator
 					}
 				}
 
-				return types;
-			})
-			.SelectMany((names, _) => names);
+				return new EquatableArray<TypeSymbolModel>([.. types]);
+			});
 
-		context.RegisterSourceOutput(typeTypes.Collect(),
-			(context, source) => CreateOutput(source, context, "AutoDeconstruct.g.cs"));
+		typeTypes.Combine(assemblyTypes.Collect());
+		context.RegisterSourceOutput(typeTypes.Collect(assemblyTypes),
+			(context, source) => CreateOutput(source, context));
 		context.RegisterSourceOutput(assemblyTypes.Collect(),
-			(context, source) => CreateOutput(source, context, "TargetAutoDeconstruct.g.cs"));
+			(context, source) => CreateOutput(source, context));
 	}
 
-	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, SourceProductionContext context,
-		string fileName)
+	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, SourceProductionContext context)
 	{
 		if (types.Length > 0)
 		{
@@ -106,7 +104,7 @@ internal sealed class AutoDeconstructGenerator
 
 			if (wasBuildInvoked)
 			{
-				context.AddSource(fileName,
+				context.AddSource("AutoDeconstruct.g.cs",
 					SourceText.From(writer.ToString(), Encoding.UTF8));
 			}
 		}

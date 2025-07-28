@@ -2,10 +2,10 @@
 
 namespace AutoDeconstruct.Tests;
 
-internal static class TargetAutoDeconstructAttributeTargetTests
+internal static class AttributeTargetTests
 {
 	[Test]
-	public static async Task GenerateAsync()
+	public static async Task GenerateWhenDuplicationExistsAsync()
 	{
 		var code =
 			"""
@@ -16,6 +16,7 @@ internal static class TargetAutoDeconstructAttributeTargetTests
 			
 			namespace TestSpace
 			{
+				[AutoDeconstruct]
 				public class Test
 				{ 
 					public string? Namespace { get; set; }
