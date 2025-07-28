@@ -13,7 +13,7 @@ internal sealed class AutoDeconstructGenerator
 {
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		var types = context.SyntaxProvider.ForAttributeWithMetadataName(
+		var typeTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
 			"AutoDeconstruct.AutoDeconstructAttribute", (_, _) => true,
 			(generatorContext, token) =>
 			{
@@ -23,26 +23,19 @@ internal sealed class AutoDeconstructGenerator
 
 				for (var i = 0; i < generatorContext.Attributes.Length; i++)
 				{
-					// Is the attribute on the assembly, or a type?
 					var attributeClass = generatorContext.Attributes[i];
 
-					var targetType = generatorContext.TargetSymbol is IAssemblySymbol ?
-						(attributeClass.ConstructorArguments[0].Value as INamedTypeSymbol) :
-						generatorContext.TargetSymbol as INamedTypeSymbol;
+					var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
+					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
 
-					if (targetType is not null)
+					if (search == SearchForExtensionMethods.No ||
+						!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
 					{
-						var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[1].Value!;
+						var typeModel = TypeSymbolModel.GetModel(compilation, targetType);
 
-						if (search == SearchForExtensionMethods.No ||
-							!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
+						if (typeModel is not null)
 						{
-							var typeModel = TypeSymbolModel.GetModel(compilation, targetType);
-
-							if (typeModel is not null)
-							{
-								types.Add(typeModel);
-							}
+							types.Add(typeModel);
 						}
 					}
 				}
@@ -51,11 +44,45 @@ internal sealed class AutoDeconstructGenerator
 			})
 			.SelectMany((names, _) => names);
 
-		context.RegisterSourceOutput(types.Collect(),
-			(context, source) => CreateOutput(source, context));
+		var assemblyTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
+			"AutoDeconstruct.TargetAutoDeconstructAttribute", (_, _) => true,
+			(generatorContext, token) =>
+			{
+				var types = new List<TypeSymbolModel>();
+
+				var compilation = generatorContext.SemanticModel.Compilation;
+
+				for (var i = 0; i < generatorContext.Attributes.Length; i++)
+				{
+					var attributeClass = generatorContext.Attributes[i];
+
+					var targetType = (attributeClass.ConstructorArguments[0].Value as INamedTypeSymbol)!;
+					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[1].Value!;
+
+					if (search == SearchForExtensionMethods.No ||
+						!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
+					{
+						var typeModel = TypeSymbolModel.GetModel(compilation, targetType);
+
+						if (typeModel is not null)
+						{
+							types.Add(typeModel);
+						}
+					}
+				}
+
+				return types;
+			})
+			.SelectMany((names, _) => names);
+
+		context.RegisterSourceOutput(typeTypes.Collect(),
+			(context, source) => CreateOutput(source, context, "AutoDeconstruct.g.cs"));
+		context.RegisterSourceOutput(assemblyTypes.Collect(),
+			(context, source) => CreateOutput(source, context, "TargetAutoDeconstruct.g.cs"));
 	}
 
-	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, SourceProductionContext context)
+	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, SourceProductionContext context,
+		string fileName)
 	{
 		if (types.Length > 0)
 		{
@@ -79,7 +106,7 @@ internal sealed class AutoDeconstructGenerator
 
 			if (wasBuildInvoked)
 			{
-				context.AddSource("AutoDeconstruct.g.cs",
+				context.AddSource(fileName,
 					SourceText.From(writer.ToString(), Encoding.UTF8));
 			}
 		}

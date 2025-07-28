@@ -2,11 +2,11 @@
 using AutoDeconstruct.IntegrationTests;
 using NUnit.Framework;
 
-[assembly: AutoDeconstruct(targetType: typeof(AssemblyLevelCustomer))]
+[assembly: TargetAutoDeconstruct(typeof(AssemblyLevelCustomer))]
 
 namespace AutoDeconstruct.IntegrationTests;
 
-internal static class AssemblyLevelAttributeTests
+internal static class TargetAutoDeconstructAttributeTests
 {
 	[Test]
 	public static void RunDeconstruct()
