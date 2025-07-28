@@ -13,7 +13,7 @@ The idea started with [this tweet](https://xcancel.com/buhakmeh/status/146210611
 
 Object deconstruction was added in C# 7.0. The documentation is [here](https://github.com/dotnet/roslyn/blob/main/docs/features/deconstruction.md), and there's another article [here](https://docs.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/deconstruct#user-defined-types). Basically, a deconstructor can be defined on either a type or as an extension method. In both cases, it has to be named "Deconstruct", it has to return `void`, and all of its parameters must be `out` parameters (the exception is with the extension method, where the first parameter is the type being extended). Furthermore, `Deconstruct()` methods can overloaded, but all `Deconstruct()` methods must have a unique number of `out` parameters. Here are two examples:
 
-```csharp
+```c#
 using System;
 
 public sealed class Customer
@@ -57,7 +57,7 @@ Note that what values are deconstructed is up to the developer. That is, deconst
 ### Marking Types
 AutoDeconstruct looks to see if the target type has any `Deconstruct()` methods, either as instance or extension methods (if extension methods are searched for - this is discussed later in this document). If none exist, then AutoDeconstruct looks to see how many accessible, readable, instance properties exist. If there's at least 1, the library generates a `Deconstruct()` extension method in a static class defined in the same namespace as the target type. For example, if we have our `Point` type defined like this:
 
-```csharp
+```c#
 namespace Maths.Geometry;
 
 [AutoDeconstruct]
@@ -73,7 +73,7 @@ public struct Point
 
 Then the library generates this:
 
-```csharp
+```c#
 #nullable enable
 
 namespace Maths.Geometry
@@ -88,7 +88,7 @@ namespace Maths.Geometry
 
 If the target type is a reference type, a null check will be generated. Furthermore, the `Deconstruct()` extension method will also be created if a `Deconstruct()` doesn't exist with the number of properties found. For example, let's say we have this:
 
-```csharp
+```c#
 using AutoDeconstruct;
 
 namespace Models;
@@ -107,7 +107,7 @@ public sealed class Person
 
 AutoDeconstruct would see that there are three properties that could be used for a generated `Deconstruct()`. The `Deconstruct()` method that exists has one `out` parameter, so it will generate one that has all three properties as `out` parameters:
 
-```csharp
+```c#
 #nullable enable
 
 namespace Models
@@ -123,11 +123,33 @@ namespace Models
 }
 ```
 
+Starting in 2.0.0, you can also declare the attribute at the assembly level:
+
+```c#
+using AutoDeconstruct;
+
+[assembly: AutoDeconstruct(typeof(Person))]
+
+namespace Models;
+
+public sealed class Person
+{
+  public uint Age { get; init; }
+  public Guid Id { get; init; }
+  public string Name { get; init; }
+
+  public void Deconstruct(out Guid id) =>
+    id = this.Id;
+}
+```
+
+You can target other types from other assemblies if you'd like.
+
 ### Extension Method Searching
 
 While AutoDeconstruct will search the target type to see if an existing `Deconstruct()` method exists that matches what AutoDeconstruct would do, a user may want to opt int to a search to look through the entire assembly for `Deconstruct()` extension methods. By default, this is turned off as it's not common to create deconstruction methods this way and it's potentially computationally expensive, but if this completeness is desired, `SearchForExtensionMethods.Yes` can be passed into `[AutoDeconstruct]`:
 
-```csharp
+```c#
 using AutoDeconstruct;
 
 namespace Models;

@@ -89,6 +89,9 @@ TODO:
 * DONE - Only open generics, error if a closed one is given (look at Rocks for that validation).
 * DONE - Consider moving `GetModel()` to `TypeSymbolModel`. Then this could be use to add an analyzer check.
 * DONE - Remove first check for `NoAutoDeconstructAttribute` in `GetModel()`
-* Lots of tests
-* Create issue to build refactoring to define `[AutoDeconstruct]` at type or assembly level, also allow for project property definition similar to what I do in Rocks.
-* (Potentially) create an issue in Transpire to encourage using named optional parameters.
+* DONE - Lots of tests
+* DONE - Consider adding an analyzer to discourage users from declaring multiple `[AutoDeconstruct]`s at the type level.
+* DONE - Create issue to build refactoring to define `[AutoDeconstruct]` at type or assembly level, also allow for project property definition similar to what I do in Rocks.
+* DONE - (Potentially) create an issue in Transpire to encourage using named optional parameters.
+* DONE - Consider bringing EmitDebugging back using "extension everything" that will be in C# 14/.NET 10.
+* DONE - Consider having two attributes, one for a type, one for the assembly, what would be the names? Maybe keep `AutoDeconstruct` for types, and `TargetAutoDeconstruct` for assembly.
