@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Testing;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Testing;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using NuGet.Frameworks;
 
@@ -17,7 +19,7 @@ internal static class TestAssistants
 			ReferenceAssemblies = TestAssistants.GetNet90(),
 			TestState =
 			{
-				Sources = { code },
+				Sources = { code }
 			},
 		};
 
@@ -27,6 +29,31 @@ internal static class TestAssistants
 		}
 
 		test.TestState.AdditionalReferences.Add(typeof(AutoDeconstructGenerator).Assembly);
+		test.TestState.ExpectedDiagnostics.AddRange(expectedDiagnostics);
+		await test.RunAsync();
+	}
+
+	internal static async Task RunAnalyzerAsync<TAnalyzer>(string code,
+		IEnumerable<DiagnosticResult> expectedDiagnostics,
+		IEnumerable<MetadataReference>? additionalReferences = null)
+		where TAnalyzer : DiagnosticAnalyzer, new()
+	{
+		var test = new AnalyzerTest<TAnalyzer>()
+		{
+			ReferenceAssemblies = TestAssistants.GetNet90(),
+			TestState =
+			{
+				Sources = { code }
+			},
+		};
+
+		test.TestState.AdditionalReferences.Add(typeof(TAnalyzer).Assembly);
+
+		if (additionalReferences is not null)
+		{
+			test.TestState.AdditionalReferences.AddRange(additionalReferences);
+		}
+
 		test.TestState.ExpectedDiagnostics.AddRange(expectedDiagnostics);
 		await test.RunAsync();
 	}
