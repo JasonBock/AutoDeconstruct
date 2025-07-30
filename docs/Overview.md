@@ -143,7 +143,23 @@ public sealed class Person
 }
 ```
 
-You can target other types from other assemblies if you'd like.
+You can target other types from other assemblies if you'd like:
+
+```c#
+using AutoDeconstruct;
+using System;
+
+[assembly: AutoDeconstruct(typeof(Guid))]
+
+// ...
+var id = Guid.NewGuid();
+var (variant, version) = id;
+```
+
+Take care in creating deconstructors to types you don't own. For example, in the case of `Guid`, getting just the `Variant` and `Version` values aren't extremely helpful.
+
+> [!WARNING]  
+> If you add `[AutoDeconstruct]` to a type, and use `[TargetAutoDeconstruct]` targeting that same type, you will get a compilation error as a duplicate extension method will be made.
 
 ### Extension Method Searching
 
