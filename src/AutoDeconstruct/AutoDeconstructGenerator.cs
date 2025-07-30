@@ -19,17 +19,12 @@ internal sealed class AutoDeconstructGenerator
 				var compilation = generatorContext.SemanticModel.Compilation;
 
 				var attributeClass = generatorContext.Attributes[0];
-
 				var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
 				var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
 
-				if (search == SearchForExtensionMethods.No ||
-					!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
-				{
-					return TypeSymbolModel.GetModel(compilation, targetType);
-				}
+				var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, search, token);
 
-				return null;
+				return model;
 			});
 
 		var assemblyTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
@@ -43,19 +38,14 @@ internal sealed class AutoDeconstructGenerator
 				for (var i = 0; i < generatorContext.Attributes.Length; i++)
 				{
 					var attributeClass = generatorContext.Attributes[i];
-
 					var targetType = (attributeClass.ConstructorArguments[0].Value as INamedTypeSymbol)!;
 					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[1].Value!;
 
-					if (search == SearchForExtensionMethods.No ||
-						!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
-					{
-						var typeModel = TypeSymbolModel.GetModel(compilation, targetType);
+					var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, search, token);
 
-						if (typeModel is not null)
-						{
-							types.Add(typeModel);
-						}
+					if (model is not null)
+					{
+						types.Add(model);
 					}
 				}
 
@@ -79,7 +69,7 @@ internal sealed class AutoDeconstructGenerator
 	{
 		if (types.Length > 0)
 		{
-			foreach (var type in types.Distinct())
+			foreach (var type in types)
 			{
 				using var writer = new StringWriter();
 				using var indentWriter = new IndentedTextWriter(writer, "\t");
@@ -92,7 +82,7 @@ internal sealed class AutoDeconstructGenerator
 				var accessibleProperties = type.AccessibleProperties;
 
 				AutoDeconstructBuilder.Build(indentWriter, type, accessibleProperties);
-				context.AddSource($"{type.FullyQualifiedName.GenerateFileName()}_{ fileName}",
+				context.AddSource($"{type.FullyQualifiedName.GenerateFileName()}_{fileName}",
 					SourceText.From(writer.ToString(), Encoding.UTF8));
 			}
 		}

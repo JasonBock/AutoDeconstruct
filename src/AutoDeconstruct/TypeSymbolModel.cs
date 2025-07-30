@@ -14,18 +14,30 @@ internal sealed record TypeSymbolModel(
 	bool IsValueType,
 	EquatableArray<PropertySymbolModel> AccessibleProperties)
 {
-	internal static TypeSymbolModel? GetModel(Compilation compilation, INamedTypeSymbol type)
+	internal static (TypeSymbolModel?, TypeSymbolModelIssue) GetModel(
+		Compilation compilation, INamedTypeSymbol type, 
+		SearchForExtensionMethods searchForExtensionMethods, CancellationToken cancellationToken)
 	{
 		var accessibleProperties = type.GetAccessibleProperties();
 
-		if (accessibleProperties.IsEmpty ||
-			type.GetMembers().OfType<IMethodSymbol>().Any(
-				m => m.Name == Shared.DeconstructName &&
-					!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
-					m.Parameters.All(p => p.RefKind == RefKind.Out)))
+		if (accessibleProperties.IsEmpty)
+		{
+			// There are no accessible properties.
+			return (null, TypeSymbolModelIssue.NoAccessibleProperties);
+		}
+		else if (type.GetMembers().OfType<IMethodSymbol>().Any(
+			m => m.Name == Shared.DeconstructName &&
+				!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
+				m.Parameters.All(p => p.RefKind == RefKind.Out)))
 		{
 			// There is an existing instance deconstruct.
-			return null;
+			return (null, TypeSymbolModelIssue.InstanceDeconstructExists);
+		}
+		else if (searchForExtensionMethods == SearchForExtensionMethods.Yes &&
+			new IsTypeExcludedVisitor(compilation.Assembly, type, cancellationToken).IsExcluded)
+		{
+			// There is an existing extension deconstruct.
+			return (null, TypeSymbolModelIssue.ExtensionsDeconstructExists);
 		}
 
 		var containingNamespace = type.ContainingNamespace is not null ?
@@ -53,10 +65,12 @@ internal sealed record TypeSymbolModel(
 			existingType = compilation.GetTypeByMetadataName(extensionFQN);
 		}
 
-		return new TypeSymbolModel(type.DeclaredAccessibility,
+		var model = new TypeSymbolModel(type.DeclaredAccessibility,
 			containingNamespace, type.Name,
 			extensionName,
 			type.GetGenericParameters(), type.GetFullyQualifiedName(),
 			type.GetConstraints(), type.IsValueType, accessibleProperties);
+
+		return (model, TypeSymbolModelIssue.None);
 	}
 }
