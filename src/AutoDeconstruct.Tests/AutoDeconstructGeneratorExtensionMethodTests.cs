@@ -49,7 +49,7 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -98,7 +98,7 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -147,7 +147,7 @@ internal static class AutoDeconstructGeneratorExtensionMethodTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 

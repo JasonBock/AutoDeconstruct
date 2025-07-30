@@ -42,7 +42,7 @@ internal static class TargetAutoDeconstructAttributeTargetTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_TargetAutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 }

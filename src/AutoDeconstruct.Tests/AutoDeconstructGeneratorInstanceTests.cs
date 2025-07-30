@@ -41,7 +41,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -84,7 +84,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -125,7 +125,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -166,7 +166,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -207,7 +207,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -251,7 +251,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -291,7 +291,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -334,7 +334,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -375,7 +375,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -467,7 +467,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -545,7 +545,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -624,7 +624,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 
@@ -653,7 +653,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			}
 			""";
 
-		var generatedCode =
+		var baseGeneratedCode =
 			"""
 			#nullable enable
 			
@@ -668,6 +668,13 @@ internal static class AutoDeconstructGeneratorInstanceTests
 					}
 				}
 			}
+			
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+			
 			namespace TestSpace
 			{
 				public static class TestExtensions
@@ -684,7 +691,10 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[
+				(typeof(AutoDeconstructGenerator), "TestSpace.BaseTest_AutoDeconstruct.g.cs", baseGeneratedCode),
+				(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode),
+			],
 			[]);
 	}
 
@@ -725,7 +735,7 @@ internal static class AutoDeconstructGeneratorInstanceTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 }

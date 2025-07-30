@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
+using NUnit.Framework;
 
 namespace AutoDeconstruct.Tests;
 
@@ -42,8 +44,18 @@ internal static class AttributeTargetTests
 			
 			""";
 
+		var typeDefinitionDiagnostic = new DiagnosticResult("CS0101", DiagnosticSeverity.Error)
+			.WithSpan(@"AutoDeconstruct\AutoDeconstruct.AutoDeconstructGenerator\TestSpace.Test_TargetAutoDeconstruct.g.cs", 5, 22, 5, 36)
+			.WithArguments("TestExtensions", "TestSpace");
+		var memberDefinitionDiagnostic = new DiagnosticResult("CS0111", DiagnosticSeverity.Error)
+			.WithSpan(@"AutoDeconstruct\AutoDeconstruct.AutoDeconstructGenerator\TestSpace.Test_TargetAutoDeconstruct.g.cs", 7, 22, 7, 33)
+			.WithArguments("Deconstruct", "TestSpace.TestExtensions");
+
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
-			[]);
+			[
+				(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode),
+				(typeof(AutoDeconstructGenerator), "TestSpace.Test_TargetAutoDeconstruct.g.cs", generatedCode)
+			],
+			[typeDefinitionDiagnostic, memberDefinitionDiagnostic]);
 	}
 }

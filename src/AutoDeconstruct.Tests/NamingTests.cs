@@ -43,7 +43,7 @@ internal static class NamingTests
 			""";
 
 		await TestAssistants.RunGeneratorAsync(code,
-			[(typeof(AutoDeconstructGenerator), "AutoDeconstruct.g.cs", generatedCode)],
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
 }

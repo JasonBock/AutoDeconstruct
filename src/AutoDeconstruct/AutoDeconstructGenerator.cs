@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.CodeDom.Compiler;
-using System.Collections.Immutable;
 using System.Text;
 
 namespace AutoDeconstruct;
@@ -13,41 +12,31 @@ internal sealed class AutoDeconstructGenerator
 {
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		var typeTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
+		var typeType = context.SyntaxProvider.ForAttributeWithMetadataName(
 			"AutoDeconstruct.AutoDeconstructAttribute", (_, _) => true,
 			(generatorContext, token) =>
 			{
-				var types = new List<TypeSymbolModel>();
-
 				var compilation = generatorContext.SemanticModel.Compilation;
 
-				for (var i = 0; i < generatorContext.Attributes.Length; i++)
+				var attributeClass = generatorContext.Attributes[0];
+
+				var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
+				var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
+
+				if (search == SearchForExtensionMethods.No ||
+					!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
 				{
-					var attributeClass = generatorContext.Attributes[i];
-
-					var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
-					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
-
-					if (search == SearchForExtensionMethods.No ||
-						!new IsTypeExcludedVisitor(compilation.Assembly, targetType, token).IsExcluded)
-					{
-						var typeModel = TypeSymbolModel.GetModel(compilation, targetType);
-
-						if (typeModel is not null)
-						{
-							types.Add(typeModel);
-						}
-					}
+					return TypeSymbolModel.GetModel(compilation, targetType);
 				}
 
-				return new EquatableArray<TypeSymbolModel>([.. types]);
+				return null;
 			});
 
 		var assemblyTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
 			"AutoDeconstruct.TargetAutoDeconstructAttribute", (_, _) => true,
 			(generatorContext, token) =>
 			{
-				var types = new List<TypeSymbolModel>();
+				var types = new HashSet<TypeSymbolModel>();
 
 				var compilation = generatorContext.SemanticModel.Compilation;
 
@@ -73,38 +62,37 @@ internal sealed class AutoDeconstructGenerator
 				return new EquatableArray<TypeSymbolModel>([.. types]);
 			});
 
-		typeTypes.Combine(assemblyTypes.Collect());
-		context.RegisterSourceOutput(typeTypes.Collect(assemblyTypes),
-			(context, source) => CreateOutput(source, context));
-		context.RegisterSourceOutput(assemblyTypes.Collect(),
-			(context, source) => CreateOutput(source, context));
+		context.RegisterSourceOutput(typeType,
+			(context, source) =>
+			{
+				if (source is not null)
+				{
+					CreateOutput(new EquatableArray<TypeSymbolModel>([source]), context, "AutoDeconstruct.g.cs");
+				}
+			});
+		context.RegisterSourceOutput(assemblyTypes,
+			(context, source) => CreateOutput(source, context, "TargetAutoDeconstruct.g.cs"));
 	}
 
-	private static void CreateOutput(ImmutableArray<TypeSymbolModel> types, SourceProductionContext context)
+	private static void CreateOutput(EquatableArray<TypeSymbolModel> types, SourceProductionContext context,
+		string fileName)
 	{
 		if (types.Length > 0)
 		{
-			using var writer = new StringWriter();
-			using var indentWriter = new IndentedTextWriter(writer, "\t");
-			indentWriter.WriteLines(
-				"""
-				#nullable enable
-
-				""");
-
-			var wasBuildInvoked = false;
-
 			foreach (var type in types.Distinct())
 			{
+				using var writer = new StringWriter();
+				using var indentWriter = new IndentedTextWriter(writer, "\t");
+				indentWriter.WriteLines(
+					"""
+					#nullable enable
+
+					""");
+
 				var accessibleProperties = type.AccessibleProperties;
 
 				AutoDeconstructBuilder.Build(indentWriter, type, accessibleProperties);
-				wasBuildInvoked = true;
-			}
-
-			if (wasBuildInvoked)
-			{
-				context.AddSource("AutoDeconstruct.g.cs",
+				context.AddSource($"{type.FullyQualifiedName.GenerateFileName()}_{ fileName}",
 					SourceText.From(writer.ToString(), Encoding.UTF8));
 			}
 		}

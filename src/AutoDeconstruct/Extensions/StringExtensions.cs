@@ -5,6 +5,14 @@ namespace AutoDeconstruct.Extensions;
 
 internal static class StringExtensions
 {
+	internal static string GenerateFileName(this string self) =>
+		self.Replace("global::", string.Empty)
+			.Replace(":", string.Empty)
+			.Replace("<", string.Empty)
+			.Replace(">", string.Empty)
+			.Replace("?", "_null_")
+			.Replace("*", "Pointer");
+
 	// This code came from Humanize:
 	// https://github.com/Humanizr/Humanizer/blob/7492f69c25be62c3be8cd435d9ccaa95a2ef20e9/src/Humanizer/InflectorExtensions.cs
 	// Trying to reference the package in the source generator
