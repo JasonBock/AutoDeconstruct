@@ -78,14 +78,24 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 			if (SymbolEqualityComparer.Default.Equals(attributeCreationOperation.Constructor!.ContainingType, typeAttribute))
 			{
 				var targetType = (context.ContainingSymbol as INamedTypeSymbol);
-				var search = (SearchForExtensionMethods)(int)(attributeCreationOperation.Arguments[0].Value as IConversionOperation)!.ConstantValue.Value!;
+				var search = attributeCreationOperation.Arguments[0].Value switch
+				{
+					IConversionOperation conversionOperation => (SearchForExtensionMethods)(int)conversionOperation.ConstantValue.Value!,
+					IFieldReferenceOperation fieldReferenceOperation => (SearchForExtensionMethods)(int)fieldReferenceOperation.ConstantValue.Value!,
+					_ => throw new NotSupportedException()
+				};
 
 				ValidateAttributeData(context, targetType, search);
 			}
 			else if (SymbolEqualityComparer.Default.Equals(attributeCreationOperation.Constructor!.ContainingType, assemblyAttribute))
 			{
 				var targetType = ((attributeCreationOperation.Arguments[0].Value as ITypeOfOperation)!.TypeOperand as INamedTypeSymbol);
-				var search = (SearchForExtensionMethods)(int)(attributeCreationOperation.Arguments[1].Value as IConversionOperation)!.ConstantValue.Value!;
+				var search = attributeCreationOperation.Arguments[1].Value switch
+				{
+					IConversionOperation conversionOperation => (SearchForExtensionMethods)(int)conversionOperation.ConstantValue.Value!,
+					IFieldReferenceOperation fieldReferenceOperation => (SearchForExtensionMethods)(int)fieldReferenceOperation.ConstantValue.Value!,
+					_ => throw new NotSupportedException()
+				};
 
 				ValidateAttributeData(context, targetType, search);
 			}

@@ -31,6 +31,11 @@ internal sealed record TypeSymbolModel(
 				m.Parameters.All(p => p.RefKind == RefKind.Out)))
 		{
 			// There is an existing instance deconstruct.
+
+			// Note: Deconstruct methods cannot be overloaded if they have
+			// the same number of out parameters, so if we find one
+			// that has the same number of parameters as accessible properties,
+			// that's enough to make it an excluded type target.
 			return (null, TypeSymbolModelIssue.InstanceDeconstructExists);
 		}
 		else if (searchForExtensionMethods == SearchForExtensionMethods.Yes &&

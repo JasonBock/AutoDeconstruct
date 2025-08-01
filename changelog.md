@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - Not Yet Released
 
 ### Added
-- `[AutoDeconstruct]` can now be used to target any type (issue [#19](https://github.com/JasonBock/AutoDeconstruct/issues/19))
+- `[TargetAutoDeconstruct]` can now be used to target any type (issue [#19](https://github.com/JasonBock/AutoDeconstruct/issues/19) and issue [#21](https://github.com/JasonBock/AutoDeconstruct/issues/21))
 
 ### Changed
-- Removed the ability to add deconstruction to every time in an assembly (issue [#18](https://github.com/JasonBock/AutoDeconstruct/issues/18))
+- Removed the ability to add deconstruction to every type in an assembly (issue [#18](https://github.com/JasonBock/AutoDeconstruct/issues/18))
 - `Deconstruct()` parameters are now sorted by property name (issue [#23](https://github.com/JasonBock/AutoDeconstruct/issues/23))
 
 ## [1.1.0] - 2025.02.01
