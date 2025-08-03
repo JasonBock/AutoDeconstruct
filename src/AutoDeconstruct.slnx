@@ -6,6 +6,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Project Path="AutoDeconstruct.Completions/AutoDeconstruct.Completions.csproj" Id="25d10255-a306-4043-91e5-cc33ce4d1628" />
   <Project Path="AutoDeconstruct.IntegrationTests/AutoDeconstruct.IntegrationTests.csproj" />
   <Project Path="AutoDeconstruct.Tests/AutoDeconstruct.Tests.csproj" />
   <Project Path="AutoDeconstruct/AutoDeconstruct.csproj" />
