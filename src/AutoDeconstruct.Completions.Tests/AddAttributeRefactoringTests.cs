@@ -31,10 +31,10 @@ internal static class AddAttributeRefactoringTests
 
 		await TestAssistants.RunRefactoringAsync<AddAttributeRefactoring>(
 			[("Source.cs", source)],
-			[("Source.cs", fixedDefinitionSource)], 0, true, [], []);
+			[("Source.cs", fixedDefinitionSource)], 0, false, [], []);
 
 		await TestAssistants.RunRefactoringAsync<AddAttributeRefactoring>(
 			[("Source.cs", source)],
-			[("Source.cs", fixedSource)], 1, true, [], []);
+			[("Source.cs", fixedSource)], 1, false, [], []);
 	}
 }
