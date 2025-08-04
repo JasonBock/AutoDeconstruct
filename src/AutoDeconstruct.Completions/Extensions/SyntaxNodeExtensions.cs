@@ -16,6 +16,7 @@ internal static class SyntaxNodeExtensions
 				typeof(BaseTypeSyntax),
 				typeof(PredefinedTypeSyntax),
 				typeof(ClassDeclarationSyntax),
+				typeof(StructDeclarationSyntax),
 				typeof(InterfaceDeclarationSyntax),
 				typeof(RecordDeclarationSyntax)
 			];
@@ -76,6 +77,8 @@ internal static class SyntaxNodeExtensions
 					{
 						ClassDeclarationSyntax classDeclarationSyntax =>
 							model.GetDeclaredSymbol(classDeclarationSyntax, cancellationToken),
+						StructDeclarationSyntax structDeclarationSyntax =>
+							model.GetDeclaredSymbol(structDeclarationSyntax, cancellationToken),
 						InterfaceDeclarationSyntax interfaceDeclarationSyntax =>
 							model.GetDeclaredSymbol(interfaceDeclarationSyntax, cancellationToken),
 						RecordDeclarationSyntax recordDeclarationSyntax =>
@@ -94,5 +97,36 @@ internal static class SyntaxNodeExtensions
 		}
 
 		return null;
+	}
+
+	internal static bool HasUsing(this SyntaxNode self, string qualifiedName)
+	{
+		if (self is null) { throw new ArgumentNullException(nameof(self)); }
+
+		var root = self;
+
+		while (true)
+		{
+			if (root.Parent is not null)
+			{
+				root = root.Parent;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		var usingNodes = root.DescendantNodes(_ => true).OfType<UsingDirectiveSyntax>();
+
+		foreach (var usingNode in usingNodes)
+		{
+			if (usingNode.Name!.ToFullString().Contains(qualifiedName))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
