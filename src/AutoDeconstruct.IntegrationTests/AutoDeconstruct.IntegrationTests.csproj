@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!--<EnableNUnitRunner>true</EnableNUnitRunner>-->
 		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
@@ -16,6 +16,7 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\AutoDeconstruct.Analysis\AutoDeconstruct.Analysis.csproj" OutputItemType="Analyzer" />
 		<ProjectReference Include="..\AutoDeconstruct\AutoDeconstruct.csproj" OutputItemType="Analyzer" />
 	</ItemGroup>
 </Project>

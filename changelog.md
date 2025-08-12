@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - Not Yet Released
 
 ### Added
+- Added a refactoring to add attributes to code (issue [#22](https://github.com/JasonBock/AutoDeconstruct/issues/22))
 - `[TargetAutoDeconstruct]` can now be used to target any type (issue [#19](https://github.com/JasonBock/AutoDeconstruct/issues/19) and issue [#21](https://github.com/JasonBock/AutoDeconstruct/issues/21))
 
 ### Changed

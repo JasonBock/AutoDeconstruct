@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Package.props" />
+  </Folder>
+  <Project Path="AutoDeconstruct.Analysis/AutoDeconstruct.Analysis.csproj" />
+  <Project Path="AutoDeconstruct.Completions/AutoDeconstruct.Completions.csproj" />
+  <Project Path="AutoDeconstruct/AutoDeconstruct.csproj" />
+</Solution>

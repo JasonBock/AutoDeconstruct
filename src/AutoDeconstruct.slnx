@@ -6,9 +6,12 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Project Path="AutoDeconstruct.Analysis.Tests/AutoDeconstruct.Analysis.Tests.csproj" Id="b1e3e797-c5a0-4003-9e87-f7b3deded231" />
+  <Project Path="AutoDeconstruct.Analysis/AutoDeconstruct.Analysis.csproj" Id="d434fc08-8afb-4460-9bc8-f57a57de1818" />
   <Project Path="AutoDeconstruct.Completions.Tests/AutoDeconstruct.Completions.Tests.csproj" Id="677fd210-463f-4d19-a12a-eca40ddacac9" />
   <Project Path="AutoDeconstruct.Completions/AutoDeconstruct.Completions.csproj" Id="25d10255-a306-4043-91e5-cc33ce4d1628" />
   <Project Path="AutoDeconstruct.IntegrationTests/AutoDeconstruct.IntegrationTests.csproj" />
+  <Project Path="AutoDeconstruct.Package/AutoDeconstruct.Package.csproj" Id="cf7c45ac-8c08-4ac7-b932-65bd792dd8e5" />
   <Project Path="AutoDeconstruct.Tests/AutoDeconstruct.Tests.csproj" />
   <Project Path="AutoDeconstruct/AutoDeconstruct.csproj" />
 </Solution>
