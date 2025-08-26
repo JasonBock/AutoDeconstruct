@@ -40,11 +40,11 @@
 			PackagePath="analyzers/dotnet/cs"
 			Visible="false" />
 		<TfmSpecificPackageFile
-            Include="../AutoDeconstruct/bin/$(Configuration)/$(TargetFramework)/AutoDeconstruct.dll"
+            Include="../AutoDeconstruct/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.dll"
             Pack="true"
             PackagePath="lib/$(TargetFramework)" />
 		<TfmSpecificPackageFile
-            Include="../AutoDeconstruct/bin/$(Configuration)/$(TargetFramework)/AutoDeconstruct.xml"
+            Include="../AutoDeconstruct/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.xml"
             Pack="true"
             PackagePath="lib/$(TargetFramework)" />
 	</ItemGroup>
