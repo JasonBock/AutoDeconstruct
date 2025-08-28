@@ -20,9 +20,8 @@ internal sealed class AutoDeconstructGenerator
 
 				var attributeClass = generatorContext.Attributes[0];
 				var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
-				var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[0].Value!;
 
-				var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, search, token);
+				var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, token);
 
 				return model;
 			});
@@ -39,9 +38,8 @@ internal sealed class AutoDeconstructGenerator
 				{
 					var attributeClass = generatorContext.Attributes[i];
 					var targetType = (attributeClass.ConstructorArguments[0].Value as INamedTypeSymbol)!;
-					var search = (SearchForExtensionMethods)attributeClass.ConstructorArguments[1].Value!;
 
-					var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, search, token);
+					var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, token);
 
 					if (model is not null)
 					{

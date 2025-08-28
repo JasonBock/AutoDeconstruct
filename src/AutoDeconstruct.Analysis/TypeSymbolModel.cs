@@ -15,8 +15,7 @@ internal sealed record TypeSymbolModel(
 	EquatableArray<PropertySymbolModel> AccessibleProperties)
 {
 	internal static (TypeSymbolModel?, TypeSymbolModelIssue) GetModel(
-		Compilation compilation, INamedTypeSymbol type, 
-		SearchForExtensionMethods searchForExtensionMethods, CancellationToken cancellationToken)
+		Compilation compilation, INamedTypeSymbol type, CancellationToken cancellationToken)
 	{
 		var accessibleProperties = type.GetAccessibleProperties();
 
@@ -37,12 +36,6 @@ internal sealed record TypeSymbolModel(
 			// that has the same number of parameters as accessible properties,
 			// that's enough to make it an excluded type target.
 			return (null, TypeSymbolModelIssue.InstanceDeconstructExists);
-		}
-		else if (searchForExtensionMethods == SearchForExtensionMethods.Yes &&
-			new IsTypeExcludedVisitor(compilation.Assembly, type, cancellationToken).IsExcluded)
-		{
-			// There is an existing extension deconstruct.
-			return (null, TypeSymbolModelIssue.ExtensionsDeconstructExists);
 		}
 
 		var containingNamespace = type.ContainingNamespace is not null ?

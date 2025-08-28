@@ -3,7 +3,6 @@
 - [What is a Deconstructor?](#what-is-a-deconstructor)
 - [AutoDeconstruct Features](#autodeconstruct-features)
 	- [Marking Types](#marking-types)
-	- [Extension Method Searching](#extension-method-searching)
 
 ## Motivation
 
@@ -55,7 +54,7 @@ Note that what values are deconstructed is up to the developer. That is, deconst
 ## AutoDeconstruct Features
 
 ### Marking Types
-AutoDeconstruct looks to see if the target type has any `Deconstruct()` methods, either as instance or extension methods (if extension methods are searched for - this is discussed later in this document). If none exist, then AutoDeconstruct looks to see how many accessible, readable, instance properties exist. If there's at least 1, the library generates a `Deconstruct()` extension method in a static class defined in the same namespace as the target type. For example, if we have our `Point` type defined like this:
+AutoDeconstruct looks to see if the target type has any instance `Deconstruct()` methods. If none exist, then AutoDeconstruct looks to see how many accessible, readable, instance properties exist. If there's at least 1, the library generates a `Deconstruct()` extension method in a static class defined in the same namespace as the target type. For example, if we have our `Point` type defined like this:
 
 ```c#
 namespace Maths.Geometry;
@@ -160,32 +159,3 @@ Take care in creating deconstructors to types you don't own. For example, in the
 
 > [!WARNING]  
 > If you add `[AutoDeconstruct]` to a type, and use `[TargetAutoDeconstruct]` targeting that same type, you will get a compilation error as a duplicate extension method will be made.
-
-### Extension Method Searching
-
-While AutoDeconstruct will search the target type to see if an existing `Deconstruct()` method exists that matches what AutoDeconstruct would do, a user may want to opt int to a search to look through the entire assembly for `Deconstruct()` extension methods. By default, this is turned off as it's not common to create deconstruction methods this way and it's potentially computationally expensive, but if this completeness is desired, `SearchForExtensionMethods.Yes` can be passed into `[AutoDeconstruct]`:
-
-```c#
-using AutoDeconstruct;
-
-namespace Models;
-
-[AutoDeconstruct(SearchForExtensionMethods.Yes)]
-public sealed class Person
-{
-  public uint Age { get; init; }
-  public Guid Id { get; init; }
-  public string Name { get; init; }
-
-  public void Deconstruct(out Guid id) =>
-    id = this.Id;
-}
-
-public static partial class PersonExtensions
-{
-  public static void Deconstruct(this Person @self, out Guid @id, out string @name, out uint @age) =>
-    (@id, @name, @age) = (@self.Id, @self.Name, @self.Age);
-}
-```
-
-In this case, AutoDeconstruct will detect an existing `Deconstruct()` method that already does what AutoDeconstruct would generate, so no code is generated.

@@ -10,14 +10,10 @@ internal static class TargetAutoDeconstructAttributeTests
 		var targetType = typeof(NotGenericType);
 		var attribute = new TargetAutoDeconstructAttribute(targetType);
 
-		using (Assert.EnterMultipleScope())
-		{
-			Assert.That(attribute.TargetType, Is.EqualTo(targetType));
-			Assert.That(attribute.Search, Is.EqualTo(SearchForExtensionMethods.No));
-		}
+		Assert.That(attribute.TargetType, Is.EqualTo(targetType));
 	}
 
-   [Test]
+	[Test]
    public static void CreateWhenTargetTypeIsNull() => 
 		Assert.That(() => new TargetAutoDeconstructAttribute(null!), 
 			Throws.TypeOf<ArgumentNullException>());

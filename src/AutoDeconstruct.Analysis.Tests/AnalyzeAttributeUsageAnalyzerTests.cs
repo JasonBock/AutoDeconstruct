@@ -16,7 +16,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 
 		using (Assert.EnterMultipleScope())
 		{
-			Assert.That(diagnostics, Has.Length.EqualTo(3), nameof(diagnostics.Length));
+			Assert.That(diagnostics, Has.Length.EqualTo(2), nameof(diagnostics.Length));
 			Assert.That(diagnostics.All(_ => _.Category == DescriptorConstants.Usage), Is.True, nameof(diagnostics));
 			Assert.That(diagnostics.All(_ => _.DefaultSeverity == DiagnosticSeverity.Error), Is.True, nameof(diagnostics));
 			Assert.That(diagnostics.All(_ => _.IsEnabledByDefault), Is.True, nameof(diagnostics));
@@ -41,17 +41,6 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 				nameof(DiagnosticDescriptor.MessageFormat));
 			Assert.That(instanceDeconstructDiagnostic.HelpLinkUri,
 				Is.EqualTo(HelpUrlBuilder.Build(InstanceDeconstructExistsDescriptor.Id)),
-				nameof(DiagnosticDescriptor.HelpLinkUri));
-
-			var extensionDeconstructDiagnostic = diagnostics.Single(_ => _.Id == ExtensionDeconstructExistsDescriptor.Id);
-			Assert.That(extensionDeconstructDiagnostic.Title.ToString(CultureInfo.CurrentCulture),
-				Is.EqualTo(ExtensionDeconstructExistsDescriptor.Title),
-				nameof(DiagnosticDescriptor.Title));
-			Assert.That(extensionDeconstructDiagnostic.MessageFormat.ToString(CultureInfo.CurrentCulture),
-				Is.EqualTo(ExtensionDeconstructExistsDescriptor.Message),
-				nameof(DiagnosticDescriptor.MessageFormat));
-			Assert.That(extensionDeconstructDiagnostic.HelpLinkUri,
-				Is.EqualTo(HelpUrlBuilder.Build(ExtensionDeconstructExistsDescriptor.Id)),
 				nameof(DiagnosticDescriptor.HelpLinkUri));
 		}
 	}
@@ -136,7 +125,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 			using AutoDeconstruct;
 			using System;
 
-			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test), SearchForExtensionMethods.Yes)]
+			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test))]
 
 			namespace TestSpace
 			{
@@ -154,9 +143,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 			}
 			""";
 
-		var diagnostic = new DiagnosticResult(ExtensionDeconstructExistsDescriptor.Id, DiagnosticSeverity.Error)
-			.WithSpan(4, 12, 4, 88);
-		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, [diagnostic]);
+		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, []);
 	}
 
 	[Test]
@@ -238,7 +225,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 
 			namespace TestSpace
 			{
-				[AutoDeconstruct(SearchForExtensionMethods.Yes)]
+				[AutoDeconstruct]
 				public class Test 
 				{ 
 					public string? Name { get; set; }
@@ -253,8 +240,6 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 			}
 			""";
 
-		var diagnostic = new DiagnosticResult(ExtensionDeconstructExistsDescriptor.Id, DiagnosticSeverity.Error)
-			.WithSpan(6, 3, 6, 49);
-		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, [diagnostic]);
+		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, []);
 	}
 }

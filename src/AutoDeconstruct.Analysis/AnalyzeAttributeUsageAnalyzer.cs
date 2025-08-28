@@ -39,13 +39,12 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 
 	private static void AnalyzeOperationAction(OperationAnalysisContext context)
 	{
-		static void ValidateAttributeData(OperationAnalysisContext context,
-			INamedTypeSymbol? targetType, SearchForExtensionMethods searchForExtensionMethods)
+		static void ValidateAttributeData(OperationAnalysisContext context, INamedTypeSymbol? targetType)
 		{
 			if (targetType is not null)
 			{
 				var (_, issue) = TypeSymbolModel.GetModel(
-					context.Compilation, targetType, searchForExtensionMethods, CancellationToken.None);
+					context.Compilation, targetType, CancellationToken.None);
 
 				if (issue == TypeSymbolModelIssue.NoAccessibleProperties)
 				{
@@ -57,12 +56,6 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 				{
 					context.ReportDiagnostic(Diagnostic.Create(
 						InstanceDeconstructExistsDescriptor.Create(),
-						context.Operation.Syntax.GetLocation()));
-				}
-				if (issue == TypeSymbolModelIssue.ExtensionsDeconstructExists)
-				{
-					context.ReportDiagnostic(Diagnostic.Create(
-						ExtensionDeconstructExistsDescriptor.Create(),
 						context.Operation.Syntax.GetLocation()));
 				}
 			}
@@ -78,26 +71,14 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 			if (SymbolEqualityComparer.Default.Equals(attributeCreationOperation.Constructor!.ContainingType, typeAttribute))
 			{
 				var targetType = context.ContainingSymbol as INamedTypeSymbol;
-				var search = attributeCreationOperation.Arguments[0].Value switch
-				{
-					IConversionOperation conversionOperation => (SearchForExtensionMethods)(int)conversionOperation.ConstantValue.Value!,
-					IFieldReferenceOperation fieldReferenceOperation => (SearchForExtensionMethods)(int)fieldReferenceOperation.ConstantValue.Value!,
-					_ => throw new NotSupportedException()
-				};
 
-				ValidateAttributeData(context, targetType, search);
+				ValidateAttributeData(context, targetType);
 			}
 			else if (SymbolEqualityComparer.Default.Equals(attributeCreationOperation.Constructor!.ContainingType, assemblyAttribute))
 			{
 				var targetType = (attributeCreationOperation.Arguments[0].Value as ITypeOfOperation)!.TypeOperand as INamedTypeSymbol;
-				var search = attributeCreationOperation.Arguments[1].Value switch
-				{
-					IConversionOperation conversionOperation => (SearchForExtensionMethods)(int)conversionOperation.ConstantValue.Value!,
-					IFieldReferenceOperation fieldReferenceOperation => (SearchForExtensionMethods)(int)fieldReferenceOperation.ConstantValue.Value!,
-					_ => throw new NotSupportedException()
-				};
 
-				ValidateAttributeData(context, targetType, search);
+				ValidateAttributeData(context, targetType);
 			}
 		}
 	}
@@ -108,7 +89,6 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 	public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 		[
 			NoAccessiblePropertiesDescriptor.Create(),
-			InstanceDeconstructExistsDescriptor.Create(),
-			ExtensionDeconstructExistsDescriptor.Create()
+			InstanceDeconstructExistsDescriptor.Create()
 		];
 }
