@@ -132,4 +132,88 @@ internal static class AutoDeconstructAttributeTargetTests
 			[(typeof(AutoDeconstructGenerator), "TestSpace.Test.NestedTest_AutoDeconstruct.g.cs", generatedCode)],
 			[]);
 	}
+
+	[Test]
+	public static async Task GenerateWhenIncludeFilteringExistsAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			namespace TestSpace
+			{
+				[AutoDeconstruct(Filtering.Include, [nameof(Test.Id)])]
+				public class Test
+				{ 
+					public string? Name { get; set; }
+					public Guid Id { get; set; }
+				}
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+			
+			namespace TestSpace
+			{
+				public static class TestExtensions
+				{
+					public static void Deconstruct(this global::TestSpace.Test @self, out global::System.Guid @id)
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						@id = @self.Id;
+					}
+				}
+			}
+			
+			""";
+
+		await TestAssistants.RunGeneratorAsync(code,
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
+			[]);
+	}
+
+	[Test]
+	public static async Task GenerateWhenExcludeFilteringExistsAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			namespace TestSpace
+			{
+				[AutoDeconstruct(Filtering.Exclude, [nameof(Test.Name)])]
+				public class Test
+				{ 
+					public string? Name { get; set; }
+					public Guid Id { get; set; }
+				}
+			}
+			""";
+
+		var generatedCode =
+			"""
+			#nullable enable
+			
+			namespace TestSpace
+			{
+				public static class TestExtensions
+				{
+					public static void Deconstruct(this global::TestSpace.Test @self, out global::System.Guid @id)
+					{
+						global::System.ArgumentNullException.ThrowIfNull(@self);
+						@id = @self.Id;
+					}
+				}
+			}
+			
+			""";
+
+		await TestAssistants.RunGeneratorAsync(code,
+			[(typeof(AutoDeconstructGenerator), "TestSpace.Test_AutoDeconstruct.g.cs", generatedCode)],
+			[]);
+	}
 }

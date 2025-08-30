@@ -15,16 +15,17 @@ internal sealed record TypeSymbolModel(
 	EquatableArray<PropertySymbolModel> AccessibleProperties)
 {
 	internal static (TypeSymbolModel?, TypeSymbolModelIssue) GetModel(
-		Compilation compilation, INamedTypeSymbol type, CancellationToken cancellationToken)
+		Compilation compilation, INamedTypeSymbol targetType, 
+		Filtering filtering, string[] properties)
 	{
-		var accessibleProperties = type.GetAccessibleProperties();
+		var accessibleProperties = targetType.GetAccessibleProperties(filtering, properties);
 
 		if (accessibleProperties.IsEmpty)
 		{
 			// There are no accessible properties.
 			return (null, TypeSymbolModelIssue.NoAccessibleProperties);
 		}
-		else if (type.GetMembers().OfType<IMethodSymbol>().Any(
+		else if (targetType.GetMembers().OfType<IMethodSymbol>().Any(
 			m => m.Name == Shared.DeconstructName &&
 				!m.IsStatic && m.Parameters.Length == accessibleProperties.Length &&
 				m.Parameters.All(p => p.RefKind == RefKind.Out)))
@@ -38,14 +39,14 @@ internal sealed record TypeSymbolModel(
 			return (null, TypeSymbolModelIssue.InstanceDeconstructExists);
 		}
 
-		var containingNamespace = type.ContainingNamespace is not null ?
-			!type.ContainingNamespace.IsGlobalNamespace ?
-				type.ContainingNamespace.ToDisplayString() :
+		var containingNamespace = targetType.ContainingNamespace is not null ?
+			!targetType.ContainingNamespace.IsGlobalNamespace ?
+				targetType.ContainingNamespace.ToDisplayString() :
 				null :
 			null;
 
 		// Create the unique name for the extension type.
-		var extensionName = $"{type.Name}Extensions";
+		var extensionName = $"{targetType.Name}Extensions";
 		var extensionFQN = containingNamespace is null ?
 			 $"{extensionName}" :
 			 $"{containingNamespace}.{extensionName}";
@@ -56,18 +57,18 @@ internal sealed record TypeSymbolModel(
 		while (existingType is not null)
 		{
 			id = id is null ? 2 : id++;
-			extensionName = $"{type.Name}Extensions{id}";
+			extensionName = $"{targetType.Name}Extensions{id}";
 			extensionFQN = containingNamespace is null ?
 				$"{extensionName}Extensions" :
 				$"{containingNamespace}.{extensionName}Extensions";
 			existingType = compilation.GetTypeByMetadataName(extensionFQN);
 		}
 
-		var model = new TypeSymbolModel(type.DeclaredAccessibility,
-			containingNamespace, type.Name,
+		var model = new TypeSymbolModel(targetType.DeclaredAccessibility,
+			containingNamespace, targetType.Name,
 			extensionName,
-			type.GetGenericParameters(), type.GetFullyQualifiedName(),
-			type.GetConstraints(), type.IsValueType, accessibleProperties);
+			targetType.GetGenericParameters(), targetType.GetFullyQualifiedName(),
+			targetType.GetConstraints(), targetType.IsValueType, accessibleProperties);
 
 		return (model, TypeSymbolModelIssue.None);
 	}

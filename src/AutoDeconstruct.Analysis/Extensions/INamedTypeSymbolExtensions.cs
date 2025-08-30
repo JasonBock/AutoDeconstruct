@@ -5,12 +5,21 @@ namespace AutoDeconstruct.Analysis.Extensions;
 
 internal static class INamedTypeSymbolExtensions
 {
-   internal static string GetGenericParameters(this INamedTypeSymbol self) => self.TypeParameters.Length > 0 ?
-		   $"<{string.Join(", ", self.TypeParameters.Select(t => t.Name))}>" :
-		   string.Empty;
+	internal static string GetGenericParameters(this INamedTypeSymbol self) => self.TypeParameters.Length > 0 ?
+			$"<{string.Join(", ", self.TypeParameters.Select(t => t.Name))}>" :
+			string.Empty;
 
-	internal static EquatableArray<PropertySymbolModel> GetAccessibleProperties(this INamedTypeSymbol self)
+	internal static EquatableArray<PropertySymbolModel> GetAccessibleProperties(
+		this INamedTypeSymbol self, Filtering filtering, string[] filteredProperties)
 	{
+		static bool IsIncluded(IPropertySymbol property, Filtering filtering, string[] filteredProperties) => 
+			filtering switch
+			{
+				Filtering.None => true,
+				Filtering.Include => filteredProperties.Contains(property.Name),
+				_ => !filteredProperties.Contains(property.Name)
+			};
+
 		var targetType = self;
 		var accessiblePropertiesBuilder = new List<PropertySymbolModel>();
 
@@ -18,10 +27,11 @@ internal static class INamedTypeSymbolExtensions
 		{
 			accessiblePropertiesBuilder.AddRange(targetType.GetMembers().OfType<IPropertySymbol>()
 				.Where(p => !p.IsStatic && !p.IsIndexer && p.GetMethod is not null &&
+					IsIncluded(p, filtering, filteredProperties) &&
 					(p.GetMethod.DeclaredAccessibility == Accessibility.Public ||
 					p.GetMethod.DeclaredAccessibility == Accessibility.Internal))
 				.Select(p => new PropertySymbolModel(
-					p.Name, p.Name.ToCamelCase(), p.Type.GetFullyQualifiedName(), 
+					p.Name, p.Name.ToCamelCase(), p.Type.GetFullyQualifiedName(),
 					p.DeclaredAccessibility, p.Type.DeclaredAccessibility)));
 			targetType = targetType.BaseType;
 		}

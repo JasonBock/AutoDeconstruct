@@ -32,19 +32,20 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 		context.RegisterCompilationStartAction(compilationContext =>
 			compilationContext.RegisterOperationAction(operationContext =>
 			{
-			   AnalyzeOperationAction(
+				AnalyzeOperationAction(
 					operationContext);
 			}, OperationKind.Attribute));
 	}
 
 	private static void AnalyzeOperationAction(OperationAnalysisContext context)
 	{
-		static void ValidateAttributeData(OperationAnalysisContext context, INamedTypeSymbol? targetType)
+		static void ValidateAttributeData(OperationAnalysisContext context, INamedTypeSymbol? targetType,
+			Filtering filtering, string[] properties)
 		{
 			if (targetType is not null)
 			{
 				var (_, issue) = TypeSymbolModel.GetModel(
-					context.Compilation, targetType, CancellationToken.None);
+					context.Compilation, targetType, filtering, properties);
 
 				if (issue == TypeSymbolModelIssue.NoAccessibleProperties)
 				{
@@ -68,17 +69,37 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 			var typeAttribute = context.Compilation.GetTypeByMetadataName(Shared.AutoDeconstructAttributeName)!;
 			var assemblyAttribute = context.Compilation.GetTypeByMetadataName(Shared.TargetAutoDeconstructAttributeName)!;
 
-			if (SymbolEqualityComparer.Default.Equals(attributeCreationOperation.Constructor!.ContainingType, typeAttribute))
+			var attributeType = attributeCreationOperation.Constructor!.ContainingType;
+
+			if (SymbolEqualityComparer.Default.Equals(attributeType, typeAttribute))
 			{
 				var targetType = context.ContainingSymbol as INamedTypeSymbol;
 
-				ValidateAttributeData(context, targetType);
+				if (attributeCreationOperation.Arguments.Length == 0)
+				{
+					ValidateAttributeData(context, targetType, Filtering.None, []);
+				}
+				else
+				{
+					ValidateAttributeData(context, targetType, 
+						(Filtering)attributeCreationOperation.Arguments[0].Value!.ConstantValue.Value!,
+						(string[])attributeCreationOperation.Arguments[1].Value!.ConstantValue.Value!);
+				}
 			}
-			else if (SymbolEqualityComparer.Default.Equals(attributeCreationOperation.Constructor!.ContainingType, assemblyAttribute))
+			else if (SymbolEqualityComparer.Default.Equals(attributeType, assemblyAttribute))
 			{
 				var targetType = (attributeCreationOperation.Arguments[0].Value as ITypeOfOperation)!.TypeOperand as INamedTypeSymbol;
 
-				ValidateAttributeData(context, targetType);
+				if (attributeCreationOperation.Arguments.Length == 1)
+				{
+					ValidateAttributeData(context, targetType, Filtering.None, []);
+				}
+				else
+				{
+					ValidateAttributeData(context, targetType,
+						(Filtering)attributeCreationOperation.Arguments[1].Value!.ConstantValue.Value!,
+						(string[])attributeCreationOperation.Arguments[2].Value!.ConstantValue.Value!);
+				}
 			}
 		}
 	}

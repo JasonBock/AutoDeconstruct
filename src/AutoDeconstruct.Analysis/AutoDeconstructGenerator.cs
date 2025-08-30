@@ -19,9 +19,15 @@ internal sealed class AutoDeconstructGenerator
 				var compilation = generatorContext.SemanticModel.Compilation;
 
 				var attributeClass = generatorContext.Attributes[0];
-				var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
 
-				var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, token);
+				var targetType = (generatorContext.TargetSymbol as INamedTypeSymbol)!;
+				var (model, _) = attributeClass.ConstructorArguments.Length == 0 ?
+					TypeSymbolModel.GetModel(compilation, targetType,
+						Filtering.None,
+						[]) :
+					TypeSymbolModel.GetModel(compilation, targetType,
+						(Filtering)attributeClass.ConstructorArguments[0].Value!,
+						[.. attributeClass.ConstructorArguments[1].Values.Select(_ => (string)_.Value!)]);
 
 				return model;
 			});
@@ -39,7 +45,13 @@ internal sealed class AutoDeconstructGenerator
 					var attributeClass = generatorContext.Attributes[i];
 					var targetType = (attributeClass.ConstructorArguments[0].Value as INamedTypeSymbol)!;
 
-					var (model, _) = TypeSymbolModel.GetModel(compilation, targetType, token);
+					var (model, _) = attributeClass.ConstructorArguments.Length == 1 ?
+						TypeSymbolModel.GetModel(compilation, targetType,
+							Filtering.None,
+							[]) :
+						TypeSymbolModel.GetModel(compilation, targetType,
+							(Filtering)attributeClass.ConstructorArguments[1].Value!,
+							[.. attributeClass.ConstructorArguments[1].Values.Select(_ => (string)_.Value!)]);
 
 					if (model is not null)
 					{
