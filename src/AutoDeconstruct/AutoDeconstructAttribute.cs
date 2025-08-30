@@ -39,7 +39,7 @@ public sealed class AutoDeconstructAttribute
 		{
 			throw new ArgumentException("Properties should not be provided if no filtering occurs.", nameof(properties));
 		}
-		else if (properties.Length == 0)
+		else if (filtering != Filtering.None && properties.Length == 0)
 		{
 			throw new ArgumentException("Properties must be provided if filtering occurs.", nameof(properties));
 		}
