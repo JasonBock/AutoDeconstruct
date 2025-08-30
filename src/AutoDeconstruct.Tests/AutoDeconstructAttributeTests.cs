@@ -16,10 +16,25 @@ internal static class AutoDeconstructAttributeTests
 		}
 	}
 
-   [Test]
-   public static void CreateWithNoFilteringAndPropertiesProvided() => 
+	[Test]
+	public static void CreateWithFilteringAndPropertiesProvided()
+	{
+		const Filtering filtering = Filtering.Include;
+		var properties = new string[] { "prop" };
+
+		var attribute = new AutoDeconstructAttribute(filtering, properties);
+
+		using (Assert.EnterMultipleScope())
+		{
+			Assert.That(attribute.Filtering, Is.EqualTo(filtering));
+			Assert.That(attribute.Properties, Is.EquivalentTo(properties));
+		}
+	}
+
+	[Test]
+	public static void CreateWithNoFilteringAndPropertiesProvided() =>
 		Assert.That(() => new AutoDeconstructAttribute(Filtering.None, ["prop"]),
-		   Throws.TypeOf<ArgumentException>());
+			Throws.TypeOf<ArgumentException>());
 
 	[Test]
 	public static void CreateWithFilteringAndNoPropertiesProvided() =>
