@@ -51,7 +51,7 @@ internal sealed class AutoDeconstructGenerator
 							[]) :
 						TypeSymbolModel.GetModel(compilation, targetType,
 							(Filtering)attributeClass.ConstructorArguments[1].Value!,
-							[.. attributeClass.ConstructorArguments[1].Values.Select(_ => (string)_.Value!)]);
+							[.. attributeClass.ConstructorArguments[2].Values.Select(_ => (string)_.Value!)]);
 
 					if (model is not null)
 					{
