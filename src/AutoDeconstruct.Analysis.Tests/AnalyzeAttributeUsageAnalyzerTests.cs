@@ -69,6 +69,56 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 	}
 
 	[Test]
+	public static async Task AnalyzeWhenAssemblyAttributeIsGoodWithFilteringUsingCollectionExpressionAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test),
+				Filtering.Include, [nameof(TestSpace.Test.Id), "Age"])]
+			
+			namespace TestSpace
+			{
+				public class Test
+				{ 
+					public uint Age { get; set; }
+					public static Guid Id { get; set; }
+					public string? Name { get; set; }
+				}
+			}
+			""";
+
+		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, []);
+	}
+
+	[Test]
+	public static async Task AnalyzeWhenAssemblyAttributeIsGoodWithFilteringUsingArrayCreationExpressionAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test),
+				Filtering.Include, new string[] { nameof(TestSpace.Test.Id), "Age" })]
+			
+			namespace TestSpace
+			{
+				public class Test
+				{ 
+					public uint Age { get; set; }
+					public static Guid Id { get; set; }
+					public string? Name { get; set; }
+				}
+			}
+			""";
+
+		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, []);
+	}
+
+	[Test]
 	public static async Task AnalyzeWhenAssemblyAttributeFindsNoAccessiblePropertiesAsync()
 	{
 		var code =
@@ -160,6 +210,52 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 				public class Test
 				{ 
 					public string? Namespace { get; set; }
+					public static Guid Id { get; set; }
+				}
+			}
+			""";
+
+		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, []);
+	}
+
+	[Test]
+	public static async Task AnalyzeWhenTypeAttributeIsGoodWithFilteringUsingArrayCreationAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			namespace TestSpace
+			{
+				[AutoDeconstruct(Filtering.Include, new string[] { nameof(TestSpace.Test.Id), "Age" })]
+				public class Test
+				{ 
+					public uint Age { get; set; }
+					public string? Name { get; set; }
+					public static Guid Id { get; set; }
+				}
+			}
+			""";
+
+		await TestAssistants.RunAnalyzerAsync<AnalyzeAttributeUsageAnalyzer>(code, []);
+	}
+
+	[Test]
+	public static async Task AnalyzeWhenTypeAttributeIsGoodWithFilteringUsingCollectionExpressionAsync()
+	{
+		var code =
+			"""
+			using AutoDeconstruct;
+			using System;
+
+			namespace TestSpace
+			{
+				[AutoDeconstruct(Filtering.Include, [nameof(TestSpace.Test.Id), "Age"])]
+				public class Test
+				{ 
+					public uint Age { get; set; }
+					public string? Name { get; set; }
 					public static Guid Id { get; set; }
 				}
 			}
