@@ -77,12 +77,14 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 			using System;
 
 			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test),
-				Filtering.Include, [nameof(TestSpace.Test.Id), "Age"])]
+				Filtering.Include, [nameof(TestSpace.Test.Id), TestSpace.Test.AgeName])]
 			
 			namespace TestSpace
 			{
 				public class Test
-				{ 
+				{
+					public const string AgeName = "Age";
+
 					public uint Age { get; set; }
 					public static Guid Id { get; set; }
 					public string? Name { get; set; }

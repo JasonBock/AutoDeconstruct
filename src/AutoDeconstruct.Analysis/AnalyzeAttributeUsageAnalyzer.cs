@@ -47,7 +47,8 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 					INameOfOperation nameOfOperation => (string)nameOfOperation.ConstantValue.Value!,
 					ILiteralOperation literalOperation => (string)literalOperation.ConstantValue.Value!,
 					IBinaryOperation binaryOperation => (string)binaryOperation.ConstantValue.Value!,
-					_ => throw new NotSupportedException($"Type of operation, {elementOperation.GetType().FullName}, is not supported.")
+					IFieldReferenceOperation fieldReferenceOperation=> (string)fieldReferenceOperation.ConstantValue.Value!,
+					_ => throw new NotSupportedException($"Type of element operation, {elementOperation.GetType().FullName}, is not supported.")
 				};
 
 			var properties = new List<string>();
@@ -68,7 +69,7 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 			}
 			else
 			{
-				throw new NotSupportedException($"Type of operation, {value.GetType().FullName}, is not supported.");
+				throw new NotSupportedException($"Type of filtered property operation, {value.GetType().FullName}, is not supported.");
 			}
 
 			return [.. properties];

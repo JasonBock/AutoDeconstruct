@@ -1,16 +1,8 @@
-﻿using AutoDeconstruct;
-using AutoDeconstruct.IntegrationTests;
-using NUnit.Framework;
-
-[assembly: TargetAutoDeconstruct(typeof(TargetCustomer))]
-[assembly: TargetAutoDeconstruct(typeof(TargetIncludedCustomer), 
-	Filtering.Include, [nameof(TargetIncludedCustomer.Age), nameof(TargetIncludedCustomer.Id)])]
-[assembly: TargetAutoDeconstruct(typeof(TargetExcludedCustomer),
-	Filtering.Exclude, [nameof(TargetIncludedCustomer.Name)])]
+﻿using NUnit.Framework;
 
 namespace AutoDeconstruct.IntegrationTests;
 
-internal static class TargetAutoDeconstructAttributeTests
+internal static class AutoDeconstructAttributeTests
 {
 	[Test]
 	public static void RunDeconstruct()
@@ -18,7 +10,7 @@ internal static class TargetAutoDeconstructAttributeTests
 		var name = "Joe";
 		var id = Guid.NewGuid();
 
-		var target = new TargetCustomer
+		var target = new Customer
 		{
 			Name = name,
 			Id = id
@@ -40,7 +32,7 @@ internal static class TargetAutoDeconstructAttributeTests
 		var id = Guid.NewGuid();
 		var age = 30u;
 
-		var target = new TargetIncludedCustomer
+		var target = new IncludedCustomer
 		{
 			Name = name,
 			Id = id,
@@ -63,7 +55,7 @@ internal static class TargetAutoDeconstructAttributeTests
 		var id = Guid.NewGuid();
 		var age = 30u;
 
-		var target = new TargetExcludedCustomer
+		var target = new ExcludedCustomer
 		{
 			Name = name,
 			Id = id,
@@ -80,20 +72,23 @@ internal static class TargetAutoDeconstructAttributeTests
 	}
 }
 
-internal sealed class TargetCustomer
+[AutoDeconstruct]
+internal sealed class Customer
 {
 	public Guid Id { get; set; }
 	public required string? Name { get; set; }
 }
 
-internal sealed class TargetIncludedCustomer
+[AutoDeconstruct(Filtering.Include, [nameof(TargetIncludedCustomer.Age), nameof(TargetIncludedCustomer.Id)])]
+internal sealed class IncludedCustomer
 {
 	public uint Age { get; set; }
 	public Guid Id { get; set; }
 	public required string? Name { get; set; }
 }
 
-internal sealed class TargetExcludedCustomer
+[AutoDeconstruct(Filtering.Exclude, [nameof(TargetIncludedCustomer.Name)])]
+internal sealed class ExcludedCustomer
 {
 	public uint Age { get; set; }
 	public Guid Id { get; set; }
