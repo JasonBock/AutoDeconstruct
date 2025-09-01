@@ -79,7 +79,7 @@ internal sealed class Customer
 	public required string? Name { get; set; }
 }
 
-[AutoDeconstruct(Filtering.Include, [nameof(TargetIncludedCustomer.Age), nameof(TargetIncludedCustomer.Id)])]
+[AutoDeconstruct(Filtering.Include, [nameof(IncludedCustomer.Age), nameof(IncludedCustomer.Id)])]
 internal sealed class IncludedCustomer
 {
 	public uint Age { get; set; }
@@ -87,7 +87,7 @@ internal sealed class IncludedCustomer
 	public required string? Name { get; set; }
 }
 
-[AutoDeconstruct(Filtering.Exclude, [nameof(TargetIncludedCustomer.Name)])]
+[AutoDeconstruct(Filtering.Exclude, [nameof(ExcludedCustomer.Name)])]
 internal sealed class ExcludedCustomer
 {
 	public uint Age { get; set; }

@@ -77,7 +77,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 			using System;
 
 			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test),
-				Filtering.Include, [nameof(TestSpace.Test.Id), TestSpace.Test.AgeName])]
+				Filtering.Include, [nameof(TestSpace.Test.Id), nameof(TestSpace.Test.Age)])]
 			
 			namespace TestSpace
 			{
@@ -104,7 +104,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 			using System;
 
 			[assembly: TargetAutoDeconstruct(typeof(TestSpace.Test),
-				Filtering.Include, new string[] { nameof(TestSpace.Test.Id), "Age" })]
+				Filtering.Include, new string[] { nameof(TestSpace.Test.Id), nameof(TestSpace.Test.Age) })]
 			
 			namespace TestSpace
 			{
@@ -230,7 +230,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 
 			namespace TestSpace
 			{
-				[AutoDeconstruct(Filtering.Include, new string[] { nameof(TestSpace.Test.Id), "Age" })]
+				[AutoDeconstruct(Filtering.Include, new string[] { nameof(TestSpace.Test.Id), nameof(TestSpace.Test.Age) })]
 				public class Test
 				{ 
 					public uint Age { get; set; }
@@ -253,7 +253,7 @@ internal static class AnalyzeAttributeUsageAnalyzerTests
 
 			namespace TestSpace
 			{
-				[AutoDeconstruct(Filtering.Include, [nameof(TestSpace.Test.Id), "Age"])]
+				[AutoDeconstruct(Filtering.Include, [nameof(TestSpace.Test.Id), nameof(TestSpace.Test.Age)])]
 				public class Test
 				{ 
 					public uint Age { get; set; }

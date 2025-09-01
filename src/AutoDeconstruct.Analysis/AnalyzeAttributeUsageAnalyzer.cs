@@ -48,6 +48,7 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 					ILiteralOperation literalOperation => (string)literalOperation.ConstantValue.Value!,
 					IBinaryOperation binaryOperation => (string)binaryOperation.ConstantValue.Value!,
 					IFieldReferenceOperation fieldReferenceOperation=> (string)fieldReferenceOperation.ConstantValue.Value!,
+					IInterpolatedStringOperation interpolatedStringOperation => (string)interpolatedStringOperation.ConstantValue.Value!,
 					_ => throw new NotSupportedException($"Type of element operation, {elementOperation.GetType().FullName}, is not supported.")
 				};
 
