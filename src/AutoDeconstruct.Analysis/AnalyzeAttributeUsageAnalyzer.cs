@@ -41,31 +41,20 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 	{
 		static string[] GetFilteredProperties(IOperation value)
 		{
-			static string GetElementValue(IOperation elementOperation) =>
-				elementOperation switch
-				{
-					INameOfOperation nameOfOperation => (string)nameOfOperation.ConstantValue.Value!,
-					ILiteralOperation literalOperation => (string)literalOperation.ConstantValue.Value!,
-					IBinaryOperation binaryOperation => (string)binaryOperation.ConstantValue.Value!,
-					IFieldReferenceOperation fieldReferenceOperation=> (string)fieldReferenceOperation.ConstantValue.Value!,
-					IInterpolatedStringOperation interpolatedStringOperation => (string)interpolatedStringOperation.ConstantValue.Value!,
-					_ => throw new NotSupportedException($"Type of element operation, {elementOperation.GetType().FullName}, is not supported.")
-				};
-
 			var properties = new List<string>();
 
 			if (value is IArrayCreationOperation arrayCreationOperation)
 			{
-				foreach(var elementValue in arrayCreationOperation.Initializer!.ElementValues)
+				foreach (var elementValue in arrayCreationOperation.Initializer!.ElementValues)
 				{
-					properties.Add(GetElementValue(elementValue));
+					properties.Add((string)elementValue!.ConstantValue.Value!);
 				}
 			}
 			else if (value is IConversionOperation conversionOperation)
 			{
 				foreach (var elementValue in (conversionOperation.Operand! as ICollectionExpressionOperation)!.Elements)
 				{
-					properties.Add(GetElementValue(elementValue));
+					properties.Add((string)elementValue!.ConstantValue.Value!);
 				}
 			}
 			else
