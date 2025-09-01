@@ -6,7 +6,7 @@ using NUnit.Framework;
 [assembly: TargetAutoDeconstruct(typeof(IncludedAssemblyLevelCustomer), 
 	Filtering.Include, [nameof(IncludedAssemblyLevelCustomer.Age), nameof(IncludedAssemblyLevelCustomer.Id)])]
 [assembly: TargetAutoDeconstruct(typeof(ExcludedAssemblyLevelCustomer),
-	Filtering.Exclude, [nameof(IncludedAssemblyLevelCustomer.Name), "Age"])]
+	Filtering.Exclude, [nameof(IncludedAssemblyLevelCustomer.Name)])]
 
 namespace AutoDeconstruct.IntegrationTests;
 

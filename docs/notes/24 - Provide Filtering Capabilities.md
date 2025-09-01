@@ -13,8 +13,6 @@
   * For a `"A" + "ge"`
     * `(((attributeCreationOperation.Arguments[2].Value as IConversionOperation).Operand as ICollectionExpressionOperation).Elements[1] as IBinaryOperation).ConstantValue.Value`
 
-This could be either 
-
 * DONE - Get rid of `SearchForExtensionMethods` and related implementation. Let the compiler tell the user if there is a conflict, which is what this switch is trying to do. There's no point in having the generator do that work.
 * DONE - Add tests for attribute
 * DONE - Pass data through model and use it during code gen
@@ -22,9 +20,9 @@ This could be either
     * DONE - Unit
         * DONE - Auto
         * DONE - TargetAuto
-    * Analyzer
-        * Auto
-        * TargetAuto
+    * DONE - Analyzer
+        * DONE - Auto
+        * DONE - TargetAuto
     * Integration
         * Auto
         * TargetAuto

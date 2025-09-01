@@ -39,6 +39,41 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 
 	private static void AnalyzeOperationAction(OperationAnalysisContext context)
 	{
+		static string[] GetFilteredProperties(IOperation value)
+		{
+			static string GetElementValue(IOperation elementOperation) =>
+				elementOperation switch
+				{
+					INameOfOperation nameOfOperation => (string)nameOfOperation.ConstantValue.Value!,
+					ILiteralOperation literalOperation => (string)literalOperation.ConstantValue.Value!,
+					IBinaryOperation binaryOperation => (string)binaryOperation.ConstantValue.Value!,
+					_ => throw new NotSupportedException($"Type of operation, {elementOperation.GetType().FullName}, is not supported.")
+				};
+
+			var properties = new List<string>();
+
+			if (value is IArrayCreationOperation arrayCreationOperation)
+			{
+				foreach(var elementValue in arrayCreationOperation.Initializer!.ElementValues)
+				{
+					properties.Add(GetElementValue(elementValue));
+				}
+			}
+			else if (value is IConversionOperation conversionOperation)
+			{
+				foreach (var elementValue in (conversionOperation.Operand! as ICollectionExpressionOperation)!.Elements)
+				{
+					properties.Add(GetElementValue(elementValue));
+				}
+			}
+			else
+			{
+				throw new NotSupportedException($"Type of operation, {value.GetType().FullName}, is not supported.");
+			}
+
+			return [.. properties];
+		}
+
 		static void ValidateAttributeData(OperationAnalysisContext context, INamedTypeSymbol? targetType,
 			Filtering filtering, string[] properties)
 		{
@@ -81,9 +116,9 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 				}
 				else
 				{
-					ValidateAttributeData(context, targetType, 
+					ValidateAttributeData(context, targetType,
 						(Filtering)attributeCreationOperation.Arguments[0].Value!.ConstantValue.Value!,
-						(string[])attributeCreationOperation.Arguments[1].Value!.ConstantValue.Value!);
+						GetFilteredProperties(attributeCreationOperation.Arguments[1].Value!));
 				}
 			}
 			else if (SymbolEqualityComparer.Default.Equals(attributeType, assemblyAttribute))
@@ -98,7 +133,7 @@ public sealed class AnalyzeAttributeUsageAnalyzer
 				{
 					ValidateAttributeData(context, targetType,
 						(Filtering)attributeCreationOperation.Arguments[1].Value!.ConstantValue.Value!,
-						(string[])attributeCreationOperation.Arguments[2].Value!.ConstantValue.Value!);
+						GetFilteredProperties(attributeCreationOperation.Arguments[2].Value!));
 				}
 			}
 		}
