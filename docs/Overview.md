@@ -3,6 +3,7 @@
 - [What is a Deconstructor?](#what-is-a-deconstructor)
 - [AutoDeconstruct Features](#autodeconstruct-features)
 	- [Marking Types](#marking-types)
+  - [Filtering Properties](#filtering-properties)
 
 ## Motivation
 
@@ -122,12 +123,12 @@ namespace Models
 }
 ```
 
-Starting in 2.0.0, you can also declare the attribute at the assembly level:
+Starting in 2.0.0, you can also use `[TargetAutoDeconstruct]` at the assembly level:
 
 ```c#
 using AutoDeconstruct;
 
-[assembly: AutoDeconstruct(typeof(Person))]
+[assembly: TargetAutoDeconstruct(typeof(Person))]
 
 namespace Models;
 
@@ -148,7 +149,7 @@ You can target other types from other assemblies if you'd like:
 using AutoDeconstruct;
 using System;
 
-[assembly: AutoDeconstruct(typeof(Guid))]
+[assembly: TargetAutoDeconstruct(typeof(Guid))]
 
 // ...
 var id = Guid.NewGuid();
@@ -159,3 +160,39 @@ Take care in creating deconstructors to types you don't own. For example, in the
 
 > [!WARNING]  
 > If you add `[AutoDeconstruct]` to a type, and use `[TargetAutoDeconstruct]` targeting that same type, you will get a compilation error as a duplicate extension method will be made.
+
+### Filtering Properties
+
+Starting with 3.0.0, AutoDeconstruct lets you specify properties that you want to either include or exclude in the generated `Deconstruct()` method. This is useful if you are inheriting from a type that has numerous properties that you do not want for deconstruction. Here's how it works (note that this also works with `[TargetAutoDeconstruct]`):
+
+```c#
+using AutoDeconstruct;
+
+namespace Models;
+
+[AutoDeconstruct(Filtering.Include, [nameof(Person.Age), nameof(Person.Name)])]
+public sealed class Person
+{
+  public uint Age { get; init; }
+  public Guid Id { get; init; }
+  public string Name { get; init; }
+}
+```
+
+In this case, `Deconstruct()` will have two `out` parameters: `age` and `name`. Properties can also be excluded:
+
+```c#
+using AutoDeconstruct;
+
+namespace Models;
+
+[AutoDeconstruct(Filtering.Exclude, [nameof(Person.Id)])]
+public sealed class Person
+{
+  public uint Age { get; init; }
+  public Guid Id { get; init; }
+  public string Name { get; init; }
+}
+```
+
+Both filtering examples lead to the same result.
