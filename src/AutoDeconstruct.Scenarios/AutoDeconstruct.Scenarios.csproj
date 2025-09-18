@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<ItemGroup>
+		<ProjectReference Include="..\AutoDeconstruct.Analysis\AutoDeconstruct.Analysis.csproj" OutputItemType="Analyzer" />
+		<ProjectReference Include="..\AutoDeconstruct.Completions\AutoDeconstruct.Completions.csproj" OutputItemType="Analyzer" />
+	</ItemGroup>
+</Project>
