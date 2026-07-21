@@ -25,26 +25,26 @@
 		<None Include="..\..\LICENSE" Pack="true" PackagePath="" />
 		<None Include="..\Images\Icon.png" Pack="true" PackagePath="" Visible="false" />
 		<None
-			Include="../AutoDeconstruct/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.dll"
+			Include="../artifacts/bin/AutoDeconstruct/$(Configuration)/AutoDeconstruct.dll"
 			Pack="true"
 			PackagePath="analyzers/dotnet/cs"
 			Visible="false" />
 		<None
-			Include="../AutoDeconstruct.Analysis/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.Analysis.dll"
+			Include="../artifacts/bin/AutoDeconstruct.Analysis/$(Configuration)/AutoDeconstruct.Analysis.dll"
 			Pack="true"
 			PackagePath="analyzers/dotnet/cs"
 			Visible="false" />
 		<None
-			Include="../AutoDeconstruct.Completions/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.Completions.dll"
+			Include="../artifacts/bin/AutoDeconstruct.Completions/$(Configuration)/AutoDeconstruct.Completions.dll"
 			Pack="true"
 			PackagePath="analyzers/dotnet/cs"
 			Visible="false" />
 		<TfmSpecificPackageFile
-            Include="../AutoDeconstruct/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.dll"
+            Include="../artifacts/bin/AutoDeconstruct/$(Configuration)/AutoDeconstruct.dll"
             Pack="true"
             PackagePath="lib/$(TargetFramework)" />
 		<TfmSpecificPackageFile
-            Include="../AutoDeconstruct/bin/$(Configuration)/netstandard2.0/AutoDeconstruct.xml"
+            Include="../artifacts/bin/AutoDeconstruct/$(Configuration)/AutoDeconstruct.xml"
             Pack="true"
             PackagePath="lib/$(TargetFramework)" />
 	</ItemGroup>
